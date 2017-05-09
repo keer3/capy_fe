@@ -4,6 +4,7 @@
     <p>
       To get started, edit files in <code>./client</code> and save.
     </p>
+    <el-button>默认按钮</el-button>
   </div>
 </template>
 

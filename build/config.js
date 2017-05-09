@@ -10,7 +10,11 @@ module.exports = {
   // disable babelrc by default
   babel: {
     babelrc: false,
-    presets: ['vue-app'],
+    presets: ['es2015', 'stage-2'],
+    'plugins': ['transform-runtime', ['transform-runtime', [{
+      'libraryName': 'element-ui',
+      'styleLibraryName': 'theme-default'
+    }]]]
   },
   postcss: [
     // add prefix via postcss since it's faster
@@ -20,5 +24,5 @@ module.exports = {
     }),
     require('postcss-nested')
   ],
-  electron: true,
+  electron: true
 }
