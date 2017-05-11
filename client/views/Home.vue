@@ -1,16 +1,13 @@
 <template>
   <div class="page">
-    <el-button>Hello World</el-button>
-    <counter></counter>
-    <p>
-      To get started, edit files in <code>./client</code> and save.
-    </p>
+    <navMenu></navMenu>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 import Counter from 'components/Counter'
-import NavMenu from 'components/NavMenu'
+import NavMenu from 'components/navMenu'
 
 export default {
   components: {

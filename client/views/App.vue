@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <navMenu></navMenu>
     <router-view></router-view>
   </div>
 </template>
@@ -12,6 +11,7 @@
       NavMenu
     }
   }
+
 </script>>
 <style>
   body {

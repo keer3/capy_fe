@@ -15,12 +15,7 @@
       return {
         activeIndex: '0',
       }
-    },
-    computed: {
-      count() {
-        return this.$store.state.count
-      }
-    },
+    }
   }
 
 </script>
