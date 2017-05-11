@@ -14,6 +14,7 @@
   </div>
 </template>
 <script>
+  import UserService from '../../service/user.service'
   export default {
     data() {
       return {
@@ -23,12 +24,22 @@
         }
       }
     },
+    mounted() {
+      this.UserService = new UserService()
+    },
     methods: {
       login() {
         console.log('submit!', this.userInfor.phone, this.userInfor.psd);
-        this.$router.push({
-          path: '/home'
+        this.UserService.login({
+          phone: this.userInfor.phone,
+          password: this.userInfor.psd
+        }).then(res => {
+          console.log('success')
         })
+        
+        // this.$router.push({
+        //   path: '/home'
+        // })
       }
     }
   }
