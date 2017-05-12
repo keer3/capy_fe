@@ -2,7 +2,7 @@
   <div class="reg">
     <div class="reg-header">
       <img src="../../assest/img/logo.png" alt="">
-      <span>让项目管理更美好</span>
+      <span>这是阿大的毕业设计</span>
     </div>
     <hr />
     <el-form :model="userInfor" :rules="rules" ref="userInfor" label-width="100px">

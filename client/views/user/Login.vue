@@ -2,7 +2,7 @@
   <div class="login">
     <div class="login-header">
       <img src="../../assest/img/logo.png" alt="">
-      <span>让项目管理更美好</span>
+      <span>这是阿大的毕业设计</span>
     </div>
     <hr />
     <el-form :inline="true" :model="userInfor">
@@ -39,19 +39,26 @@
       this.UserService = new UserService()
     },
     methods: {
+      // 登陆
       login() {
-        console.log('submit!', this.userInfor.phone, this.userInfor.psd);
         this.UserService.login({
           phone: this.userInfor.phone,
           password: this.userInfor.psd
         }).then(res => {
-          console.log('success')
-        })
+          const {
+            status,
+            message,
+            data
+          } = res
 
-        // this.$router.push({
-        //   path: '/home'
-        // })
+          if (status === 200) {
+            this.$router.push({
+              path: '/home'
+            })
+          }
+        })
       },
+      // 跳转到注册页面
       toReg() {
         this.$router.push({
           path: '/reg'
