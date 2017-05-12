@@ -34,6 +34,9 @@
       z-index: 4;
       position: relative;
       left: 30px;
+      a {
+        outline: none;
+      }
       img {
         width: 70px;
         height: 35px;

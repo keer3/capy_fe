@@ -2,7 +2,7 @@
   <div>
     <el-tabs class="second-nav" v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="项目列表" name="first">
-        <el-button type="primary"><i class="el-icon-plus"></i> 新增项目</el-button>
+        <el-button type="primary" @click="addProjectDialogVisible = true"><i class="el-icon-plus"></i> 新增项目</el-button>
         <el-button type="primary"><i class="el-icon-upload2"></i> 导入项目</el-button>
         <div class="table-content">
           <el-table border :data="projectList" style="width: 100%">
@@ -24,11 +24,37 @@
         </div>
       </el-tab-pane>
     </el-tabs>
+
+    <el-dialog title="新增项目" :visible.sync="addProjectDialogVisible" class="add-dialog">
+      <el-form :model="project" :rules="rules" ref="project" label-position="left" label-width="80px">
+        <el-form-item label="项目名称" prop="name">
+          <el-input v-model="project.name"></el-input>
+        </el-form-item>
+        <el-form-item label="版本号" prop="version">
+          <el-input v-model="project.version"></el-input>
+        </el-form-item>
+        <el-form-item label="项目类型" prop="type">
+          <el-select v-model="project.type" placeholder="请选择项目类型">
+            <el-option v-for="type of projectType" :label="type.name" :value="type.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="项目说明" prop="dsc">
+          <el-input type="textarea" v-model="project.dsc"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addProjectDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addProject">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
   import Moment from 'moment'
   import ProjectService from '../../service/project.service'
+  import {
+    PROJECT_TYPE
+  } from '../../../config/global.config.js'
   export default {
     mounted() {
       this.ProjectService = new ProjectService()
@@ -52,7 +78,30 @@
     data() {
       return {
         activeName: 'first',
-        projectList: []
+        projectList: [],
+        addProjectDialogVisible: false,
+        project: {
+          type: '',
+          version: '1.0.0'
+        },
+        projectType: PROJECT_TYPE,
+        rules: {
+          name: [{
+            required: true,
+            message: '请输入项目名称',
+            trigger: 'blur'
+          }],
+          version: [{
+            required: true,
+            message: '请输入版本号',
+            trigger: 'blur'
+          }],
+          type: [{
+            required: true,
+            message: '请选择项目类型',
+            trigger: 'blur'
+          }]
+        }
       }
     },
     methods: {
@@ -64,6 +113,20 @@
       },
       handleDelete() {
 
+      },
+      addProject() {
+        this.$refs.project.validate((valid) => {
+          if (valid) {
+            this.project.createUserId = this.userInfor.userId
+            this.ProjectService.addProject(this.project).then(res => {
+              res.data.update_time = Moment().format('YYYY-MM-DD HH:mm:ss')
+              this.projectList.push(res.data)
+              this.addProjectDialogVisible = false
+            })
+          } else {
+            return false
+          }
+        })
       }
     }
   }
@@ -91,6 +154,15 @@
       thead div {
         background: #fff;
       }
+    }
+  }
+
+  .add-dialog {
+    .el-select {
+      width: 100%;
+    }
+    .el-dialog__close {
+      font-size: 15px;
     }
   }
 
