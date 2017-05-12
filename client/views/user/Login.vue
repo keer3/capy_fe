@@ -17,7 +17,7 @@
       </el-form-item>
     </el-form>
     <div class="login-footer">
-      <span class="reg" @click="toReg">还没有账号，免费注册..</span>
+      <span class="toReg" @click="toReg">还没有账号，免费注册..</span>
       <span><el-checkbox v-model="rememberPsd">记住密码</el-checkbox></span>
       <span>忘记密码</span>
     </div>
@@ -53,7 +53,6 @@
         // })
       },
       toReg() {
-        console.log('toReg')
         this.$router.push({
           path: '/reg'
         })
@@ -107,7 +106,7 @@
       &>span {
         margin-left: 50px;
       }
-      .reg{
+      .toReg{
         position: absolute;
         left: 5px;
         margin: 0px;
