@@ -26,6 +26,12 @@ const loginRoute = {
   component: require('../views/user/login.vue')
 }
 
+// 登录路由
+const regRoute = {
+  path: '/reg',
+  component: require('../views/user/Reg.vue')
+}
+
 // 未找到页面路由
 const errorRoute = {
   path: '/404',
@@ -38,7 +44,7 @@ const redirectRoute = {
   redirect: '/login'
 }
 
-routers = routers.concat([indexRouter, loginRoute, errorRoute, redirectRoute])
+routers = routers.concat([indexRouter, loginRoute, regRoute, errorRoute, redirectRoute])
 
 export default new Router({
   mode: 'history',
