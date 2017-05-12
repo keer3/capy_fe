@@ -13,7 +13,7 @@
         <el-input type="password" v-model="userInfor.psd" placeholder="密码"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="login">登陆</el-button>
+        <el-button type="primary" @click="login" v-loading.fullscreen="loading">登陆</el-button>
       </el-form-item>
     </el-form>
     <div class="login-footer">
@@ -25,6 +25,8 @@
 </template>
 <script>
   import UserService from '../../service/user.service'
+  import sha1 from 'sha1'
+
   export default {
     data() {
       return {
@@ -32,7 +34,8 @@
           phone: '',
           psd: ''
         },
-        rememberPsd: true
+        rememberPsd: true,
+        loading: false
       }
     },
     mounted() {
@@ -41,10 +44,12 @@
     methods: {
       // 登陆
       login() {
+        this.loadding = true
         this.UserService.login({
           phone: this.userInfor.phone,
           password: this.userInfor.psd
         }).then(res => {
+          this.loadding = false
           const {
             status,
             message,
@@ -52,6 +57,8 @@
           } = res
 
           if (status === 200) {
+            // 将用户信息保存到vuex
+            this.$store.commit('SAVE_USER_INFOR', data)
             this.$router.push({
               path: '/home'
             })

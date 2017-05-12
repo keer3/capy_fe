@@ -26,7 +26,6 @@
   }
 
   .page {
-    text-align: center;
     /* nesting for the need to test postcss */
     code {
       background-color: #f0f0f0;

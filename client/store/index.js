@@ -1,18 +1,17 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import createLogger from 'vuex/dist/logger'
 
 Vue.use(Vuex)
 
 const state = {
-  count: 0
+  count: 0,
+  userInfor: {}
 }
 
 const mutations = {
-  INCREMENT (state) {
-    state.count++
-  },
-  DECREMENT (state) {
-    state.count--
+  SAVE_USER_INFOR (state, userInfor) {
+    state.userInfor = userInfor
   }
 }
 
@@ -27,7 +26,8 @@ const actions = {
 const store = new Vuex.Store({
   state,
   mutations,
-  actions
+  actions,
+  plugins: [createLogger()]
 })
 
 export default store

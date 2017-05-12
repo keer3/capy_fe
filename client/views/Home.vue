@@ -1,6 +1,7 @@
 <template>
   <div class="page">
     <navMenu></navMenu>
+    <counter></counter>
     <router-view></router-view>
   </div>
 </template>

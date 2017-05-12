@@ -17,7 +17,7 @@ const indexRouter = {
 
 indexRouter.children.push({
   path: '/project',
-  component: require('../views/Project')
+  component: require('../views/project/ProjectList.vue')
 })
 
 // 登录路由
