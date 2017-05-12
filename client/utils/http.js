@@ -10,7 +10,7 @@ export default class HttpBase {
 
   get (url, params = {}) {
     return new Promise((resolve, reject) => {
-      Vue.http.get(this.baseUrl + url, params).then(res => {
+      Vue.http.get(this.baseUrl + url).then(res => {
         this._msgHandler(res.body)
         resolve(res.body)
       }).catch(err => {
