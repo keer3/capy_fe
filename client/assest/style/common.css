@@ -2,6 +2,12 @@ html,
 body {
   height: 100%;
   width: 100%;
+  color: #333;
   background: url('../img/bg.png');
   font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
+}
+
+ol li,
+ul li {
+  list-style-type: none;
 }

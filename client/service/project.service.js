@@ -20,4 +20,7 @@ export default class ProjectService extends HTTP {
     return this.get(`project/getProjectInfo?projectId=${projectId}`)
   }
 
+  findUserByProject ({ projectId }) {
+    return this.get(`project/findUserByProject?projectId=${projectId}`)
+  }
 }

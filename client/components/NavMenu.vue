@@ -34,6 +34,7 @@
       z-index: 4;
       position: relative;
       left: 30px;
+      outline: none;
       a {
         outline: none;
       }

@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-tabs v-model="activeName" class="second-nav">
+
       <el-tab-pane name="first">
         <span slot="label"><i class="el-icon-date"></i> 项目概况</span>
         <div class="project-infor">
@@ -72,30 +73,38 @@
           </el-row>
         </div>
       </el-tab-pane>
+
       <el-tab-pane name="second">
         <span slot="label"><i class="el-icon-document"></i> 接口文档</span>
-        <apiDoc></apiDoc>
+        <projectApi :project="project" />
       </el-tab-pane>
+
       <el-tab-pane name="third">
         <span slot="label"><i class="el-icon-upload"></i> 数据字典</span>
       </el-tab-pane>
+      
       <el-tab-pane name="fourth">
         <span slot="label"><i class="el-icon-minus"></i> 文档管理</span>
       </el-tab-pane>
+
       <el-tab-pane name="fifth">
         <span slot="label"><i class="el-icon-document"></i> 人员管理</span>
+        <projectMember :project="project" />
       </el-tab-pane>
+
     </el-tabs>
 
   </div>
 </template>
 <script>
-  import ApiDoc from './ProjectApi.vue'
+  import ProjectApi from './ProjectApi.vue'
+  import ProjectMember from './ProjectMember.vue'
   import ProjectService from '../../service/project.service'
 
   export default {
     components: {
-      ApiDoc
+      ProjectApi,
+      ProjectMember
     },
     mounted() {
       this.ProjectService = new ProjectService()
