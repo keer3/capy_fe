@@ -19,7 +19,7 @@
             </el-col>
             <el-col :span="3">
               <div class="grid-content bg-purple">
-                <el-button type="text"><i class="el-icon-edit"></i> 修改</el-button>
+                <el-button type="text" @click="handleEdit(project)"><i class="el-icon-edit"></i> 修改</el-button>
               </div>
             </el-col>
           </el-row>
@@ -82,7 +82,7 @@
       <el-tab-pane name="third">
         <span slot="label"><i class="el-icon-upload"></i> 数据字典</span>
       </el-tab-pane>
-      
+
       <el-tab-pane name="fourth">
         <span slot="label"><i class="el-icon-minus"></i> 文档管理</span>
       </el-tab-pane>
@@ -94,12 +94,37 @@
 
     </el-tabs>
 
+    <el-dialog title="修改项目" :visible.sync="editProjectDialogVisible" class="add-dialog">
+      <el-form :model="projectModel" :rules="rules" ref="projectModel" label-position="left" label-width="80px">
+        <el-form-item label="项目名称" prop="name">
+          <el-input v-model="projectModel.name"></el-input>
+        </el-form-item>
+        <el-form-item label="版本号" prop="version">
+          <el-input v-model="projectModel.version"></el-input>
+        </el-form-item>
+        <el-form-item label="项目类型" prop="type">
+          <el-select v-model="projectModel.type" placeholder="请选择项目类型">
+            <el-option v-for="type of projectType" :label="type.name" :value="type.name"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="项目说明" prop="dec">
+          <el-input type="textarea" v-model="projectModel.dec"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editProjectDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveEdit">保 存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
   import ProjectApi from './ProjectApi.vue'
   import ProjectMember from './ProjectMember.vue'
   import ProjectService from '../../service/project.service'
+  import {
+    PROJECT_TYPE
+  } from '../../../config/global.config.js'
 
   export default {
     components: {
@@ -119,12 +144,70 @@
     },
     data() {
       return {
-        activeName: 'first'
+        activeName: 'first',
+        editProjectDialogVisible: false,
+        projectModel: {
+          type: ''
+        },
+        rules: {
+          name: [{
+            required: true,
+            message: '请输入项目名称',
+            trigger: 'blur'
+          }],
+          version: [{
+            required: true,
+            message: '请输入版本号',
+            trigger: 'blur'
+          }],
+          type: [{
+            required: true,
+            message: '请选择项目类型',
+            trigger: 'blur'
+          }]
+        },
+        projectType: PROJECT_TYPE
       }
     },
     methods: {
       changeTap(tapName) {
         this.activeName = tapName
+      },
+      handleEdit(project) {
+        this.editProjectDialogVisible = true
+        this.projectModel.name = project.name
+        this.projectModel.type = project.type
+        this.projectModel.version = project.version
+        this.projectModel.dec = project.dec
+      },
+      saveEdit() {
+        this.$refs.projectModel.validate((valid) => {
+          if (valid) {
+            this.projectModel.projectId = this.project.id
+            this.ProjectService.updateProjectInfo(this.projectModel).then(res => {
+              if (res.status === 200) {
+                this.editProjectDialogVisible = false
+                
+                this.project.name = this.projectModel.name
+                this.project.type = this.projectModel.type
+                this.project.version = this.projectModel.version
+                this.project.dec = this.projectModel.dec
+                this.projectModel = {
+                  type: ''
+                }
+
+                console.log(this.project)
+
+                this.$message({
+                  type: 'success',
+                  message: `保存成功！`
+                })
+              }
+            })
+          } else {
+            return false
+          }
+        })
       }
     }
   }
@@ -221,9 +304,9 @@
     }
     .third-row {
       margin-top: 20px;
-      .grid-content{
+      .grid-content {
         cursor: pointer;
-        &:hover{
+        &:hover {
           background: #fafafa;
         }
       }
