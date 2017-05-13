@@ -3,7 +3,7 @@
     <router-link to="/" class="logo">
       <img src="../assest/img/logo.png" alt="">
     </router-link>
-    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
+    <el-menu :default-active="activeIndex" mode="horizontal">
       <el-menu-item index="1">
         <router-link to="/project"><i class="el-icon-upload"></i>项目管理</router-link>
       </el-menu-item>
@@ -19,7 +19,7 @@
   export default {
     data() {
       return {
-        activeIndex: '0',
+        activeIndex: '1'
       }
     }
   }

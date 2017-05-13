@@ -2,7 +2,7 @@
   <div>
     <el-tabs class="second-nav" v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="项目列表" name="first">
-        <el-button type="primary" @click="addProjectDialogVisible = true"><i class="el-icon-plus"></i> 新增项目</el-button>
+        <el-button type="primary" @click="addProjectDialogVisible = true; dialogTitle = '新增项目'"><i class="el-icon-plus"></i> 新增项目</el-button>
         <el-button type="primary"><i class="el-icon-upload2"></i> 导入项目</el-button>
         <div class="table-content">
           <el-table border :data="projectList" style="width: 100%">
@@ -16,8 +16,8 @@
             </el-table-column>
             <el-table-column prop="" label="操作">
               <template scope="scope">
-                <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编 辑</el-button>
+                <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删 除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -25,7 +25,7 @@
       </el-tab-pane>
     </el-tabs>
 
-    <el-dialog title="新增项目" :visible.sync="addProjectDialogVisible" class="add-dialog">
+    <el-dialog :title="dialogTitle" :visible.sync="addProjectDialogVisible" class="add-dialog">
       <el-form :model="project" :rules="rules" ref="project" label-position="left" label-width="80px">
         <el-form-item label="项目名称" prop="name">
           <el-input v-model="project.name"></el-input>
@@ -35,7 +35,7 @@
         </el-form-item>
         <el-form-item label="项目类型" prop="type">
           <el-select v-model="project.type" placeholder="请选择项目类型">
-            <el-option v-for="type of projectType" :label="type.name" :value="type.value"></el-option>
+            <el-option v-for="type of projectType" :label="type.name" :value="type.name"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="项目说明" prop="dsc">
@@ -44,9 +44,10 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="addProjectDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addProject">确 定</el-button>
+        <el-button type="primary" @click="addProject">保 存</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 <script>
@@ -101,28 +102,49 @@
             message: '请选择项目类型',
             trigger: 'blur'
           }]
-        }
+        },
+        dialogTitle: ''
       }
     },
     methods: {
       handleClick(tab, event) {
         console.log(tab, event);
       },
-      handleEdit() {
-
+      handleEdit(index, project) {
+        this.dialogTitle = '编辑项目'
+        this.addProjectDialogVisible = true
+        this.project = project
       },
-      handleDelete() {
+      handleDelete(index, project) {
 
       },
       addProject() {
         this.$refs.project.validate((valid) => {
           if (valid) {
             this.project.createUserId = this.userInfor.userId
-            this.ProjectService.addProject(this.project).then(res => {
-              res.data.update_time = Moment().format('YYYY-MM-DD HH:mm:ss')
-              this.projectList.push(res.data)
-              this.addProjectDialogVisible = false
-            })
+            if (this.dialogTitle === '新增项目') {
+              this.ProjectService.addProject(this.project).then(res => {
+                res.data.update_time = Moment().format('YYYY-MM-DD HH:mm:ss')
+                this.projectList.push(res.data)
+                this.addProjectDialogVisible = false
+                this.project = {}
+                this.$message({
+                  type: 'success',
+                  message: `添加成功！`
+                })
+              })
+            } else {
+              this.project.projectId = this.project.id
+              this.ProjectService.updateProjectInfo(this.project).then(res => {
+                this.addProjectDialogVisible = false
+                this.project = {}
+                this.$message({
+                  type: 'success',
+                  message: `保存成功！`
+                })
+              })
+            }
+
           } else {
             return false
           }
