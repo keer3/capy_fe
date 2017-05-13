@@ -5,7 +5,7 @@
     </router-link>
     <el-menu :default-active="activeIndex" mode="horizontal">
       <el-menu-item index="1">
-        <router-link to="/project"><i class="el-icon-upload"></i>项目管理</router-link>
+        <router-link to="/project/list"><i class="el-icon-upload"></i>项目管理</router-link>
       </el-menu-item>
       <el-menu-item index="2">
         <router-link to="/doc"><i class="el-icon-document"></i>文档管理</router-link>

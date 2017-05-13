@@ -5,13 +5,16 @@ import createLogger from 'vuex/dist/logger'
 Vue.use(Vuex)
 
 const state = {
-  count: 0,
-  userInfor: {}
+  userInfor: {},
+  project: {}
 }
 
 const mutations = {
   SAVE_USER_INFOR (state, userInfor) {
     state.userInfor = userInfor
+  },
+  SAVE_PROJECT (state, project) {
+    state.project = project
   }
 }
 

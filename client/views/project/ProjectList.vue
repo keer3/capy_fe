@@ -5,12 +5,18 @@
         <el-button type="primary" @click="addProjectDialogVisible = true; dialogTitle = '新增项目'"><i class="el-icon-plus"></i> 新增项目</el-button>
         <el-button type="primary"><i class="el-icon-upload2"></i> 导入项目</el-button>
         <div class="table-content">
-          <el-table border :data="projectList" style="width: 100%" v-loading="loading">
+          <el-table border :data="projectList" style="width: 100%" v-loading="loading" highlight-current-row @current-change="handleCurrentChange">
             <el-table-column prop="name" label="项目名称">
             </el-table-column>
             <el-table-column prop="version" label="版本号">
+              <template scope="scope">
+                <el-tag type="primary">{{ scope.row.version }}</el-tag>
+              </template>
             </el-table-column>
             <el-table-column prop="type" label="类型">
+              <template scope="scope">
+                <el-tag type="success">{{ scope.row.type }}</el-tag>
+              </template>
             </el-table-column>
             <el-table-column prop="update_time" label="项目最后修改时间">
             </el-table-column>
@@ -186,6 +192,19 @@
           this.projectList.forEach(project => {
             project.update_time = Moment(project.update_time).format('YYYY-MM-DD HH:mm:ss')
           })
+        })
+      },
+      handleCurrentChange(val) {
+        this.ProjectService.getProjectInfo({
+          projectId: val.id
+        }).then(res => {
+          if (res.status === 200) {
+            res.data.update_time = Moment(res.data.update_time).format('YYYY-MM-DD HH:mm:ss')
+            this.$store.commit('SAVE_PROJECT', res.data)
+            this.$router.push({
+              path: '/project'
+            })
+          }
         })
       }
     }

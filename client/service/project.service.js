@@ -15,4 +15,9 @@ export default class ProjectService extends HTTP {
   updateProjectInfo (params = {}) {
     return this.post('project/updateProjectInfo', params)
   }
+
+  getProjectInfo ({ projectId }) {
+    return this.get(`project/getProjectInfo?projectId=${projectId}`)
+  }
+
 }
