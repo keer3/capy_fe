@@ -1,11 +1,11 @@
 <template>
   <div>
-    <el-tabs class="second-nav" v-model="activeName" @tab-click="handleClick">
+    <el-tabs class="second-nav" v-model="activeName">
       <el-tab-pane label="项目列表" name="first">
         <el-button type="primary" @click="addProjectDialogVisible = true; dialogTitle = '新增项目'"><i class="el-icon-plus"></i> 新增项目</el-button>
         <el-button type="primary"><i class="el-icon-upload2"></i> 导入项目</el-button>
         <div class="table-content">
-          <el-table border :data="projectList" style="width: 100%">
+          <el-table border :data="projectList" style="width: 100%" v-loading="loading">
             <el-table-column prop="name" label="项目名称">
             </el-table-column>
             <el-table-column prop="version" label="版本号">
@@ -24,6 +24,17 @@
         </div>
       </el-tab-pane>
     </el-tabs>
+
+
+    <el-dialog title="提示" :visible.sync="deleteProjectDialogVisible" size="tiny">
+      <p>确认删除项目<span style="color: #ff4949">【{{ nameToDel }}】</span>？</p>
+      <p>删除后相关联的所有都会被删除，将不再恢复！</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteProjectDialogVisible = false">取 消</el-button>
+        <el-button type="danger" @click="delProject">删 除</el-button>
+      </span>
+    </el-dialog>
+
 
     <el-dialog :title="dialogTitle" :visible.sync="addProjectDialogVisible" class="add-dialog">
       <el-form :model="project" :rules="rules" ref="project" label-position="left" label-width="80px">
@@ -59,17 +70,7 @@
   export default {
     mounted() {
       this.ProjectService = new ProjectService()
-      this.ProjectService.findProjectByUser({
-        userId: this.userInfor.userId
-      }).then(res => {
-        const {
-          data
-        } = res
-        this.projectList = data
-        this.projectList.forEach(project => {
-          project.update_time = Moment(project.update_time).format('YYYY-MM-DD HH:mm:ss')
-        })
-      })
+      this.reload()
     },
     computed: {
       userInfor() {
@@ -81,6 +82,7 @@
         activeName: 'first',
         projectList: [],
         addProjectDialogVisible: false,
+        deleteProjectDialogVisible: false,
         project: {
           type: '',
           version: '1.0.0'
@@ -103,51 +105,87 @@
             trigger: 'blur'
           }]
         },
-        dialogTitle: ''
+        dialogTitle: '',
+        nameToDel: '',
+        loading: false
       }
     },
     methods: {
-      handleClick(tab, event) {
-        console.log(tab, event);
-      },
       handleEdit(index, project) {
         this.dialogTitle = '编辑项目'
         this.addProjectDialogVisible = true
         this.project = project
       },
       handleDelete(index, project) {
-
+        this.deleteProjectDialogVisible = true;
+        this.nameToDel = project.name
+        this.project = project
       },
       addProject() {
+        // 验证表单
         this.$refs.project.validate((valid) => {
           if (valid) {
             this.project.createUserId = this.userInfor.userId
+            // 添加项目
             if (this.dialogTitle === '新增项目') {
               this.ProjectService.addProject(this.project).then(res => {
-                res.data.update_time = Moment().format('YYYY-MM-DD HH:mm:ss')
-                this.projectList.push(res.data)
-                this.addProjectDialogVisible = false
-                this.project = {}
-                this.$message({
-                  type: 'success',
-                  message: `添加成功！`
-                })
+                if (res.status === 200) {
+                  this.reload()
+                  this.addProjectDialogVisible = false
+                  this.project = {}
+                  this.$message({
+                    type: 'success',
+                    message: `添加成功！`
+                  })
+                }
               })
             } else {
+              // 编辑项目
               this.project.projectId = this.project.id
               this.ProjectService.updateProjectInfo(this.project).then(res => {
-                this.addProjectDialogVisible = false
-                this.project = {}
-                this.$message({
-                  type: 'success',
-                  message: `保存成功！`
-                })
+                if (res.status === 200) {
+                  this.addProjectDialogVisible = false
+                  this.project = {}
+                  this.$message({
+                    type: 'success',
+                    message: `保存成功！`
+                  })
+                }
               })
             }
-
           } else {
             return false
           }
+        })
+      },
+      delProject() {
+        this.ProjectService.delProject({
+          projectId: this.project.id
+        }).then(res => {
+          if (res.status === 200) {
+            this.reload()
+            this.deleteProjectDialogVisible = false
+            this.project = {}
+            this.$message({
+              type: 'success',
+              message: `删除成功！`
+            })
+          }
+        })
+      },
+      reload() {
+        this.loading = true
+        this.ProjectService.findProjectByUser({
+          userId: this.userInfor.userId
+        }).then(res => {
+          this.loading = false
+          const {
+            data
+          } = res
+          this.projectList = data
+          this.projectList.forEach(project => {
+            project.update_time = Moment(project.update_time).format('YYYY-MM-DD HH:mm:ss')
+          })
         })
       }
     }
@@ -183,9 +221,10 @@
     .el-select {
       width: 100%;
     }
-    .el-dialog__close {
-      font-size: 15px;
-    }
+  }
+
+  .el-dialog__close {
+    font-size: 15px;
   }
 
 </style>
