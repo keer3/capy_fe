@@ -23,8 +23,8 @@
                     <i class="el-icon-delete"></i>
                   </span>
                 </li>
-                <li>
-                  <span>name</span>
+                <li v-for="group of groupList">
+                  <span>{{ group.name }}</span>
                   <span>
                     <i class="el-icon-edit"></i>
                     <i class="el-icon-delete"></i>
@@ -75,6 +75,7 @@
     components: {},
     mounted() {
       this.ApiService = new ApiService()
+      this.getApiGroupList()
     },
     computed: {
       userInfor() {
@@ -87,6 +88,7 @@
     data() {
       return {
         searchApiInput: '',
+        groupList: [],
         tableData: [{
           date: '2016-05-02',
           name: '王小虎',
@@ -109,6 +111,15 @@
     methods: {
       searchApi() {
 
+      },
+      getApiGroupList() {
+        this.ApiService.getGroupList({
+          projectId: this.project.id
+        }).then(res => {
+          if(res.status === 200) {
+            this.groupList = res.data
+          }
+        })
       }
     }
   }
