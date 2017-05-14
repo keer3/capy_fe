@@ -1,141 +1,220 @@
 <template>
-  <div class="project-infor">
+  <div class="api-infor">
+    <el-row>
+      <el-col :span="4">
+        <div class="grid-content bg-purple menu-left">
 
-    <el-row class="title-row">
-      <el-col :span="6" class="project-name">
-        <div class="grid-content bg-purple">
-          <p><i class="el-icon-menu"></i> 项目名称</p>
-        </div>
-      </el-col>
-      <el-col :span="15">
-        <div class="grid-content bg-purple">
-          <p>项目介绍</p>
-        </div>
-      </el-col>
-      <el-col :span="3">
-        <div class="grid-content bg-purple">
-          <el-button type="text"><i class="el-icon-edit"></i> 修改</el-button>
-        </div>
-      </el-col>
-    </el-row>
+          <div class="search-input">
+            <el-input placeholder="搜索接口" icon="search" v-model="searchApiInput" :on-icon-click="searchApi">
+            </el-input>
+          </div>
 
-    <el-row class="second-row">
-      <el-col :span="6">
-        <div class="grid-content bg-purple">
-          <h3>Web</h3>
-          <p>项目类型</p>
-        </div>
-      </el-col>
-      <el-col :span="6">
-        <div class="grid-content bg-purple">
-          <h3>V 1.2.1</h3>
-          <p>版本号</p>
-        </div>
-      </el-col>
-      <el-col :span="6">
-        <div class="grid-content bg-purple">
-          <h3>2017-05-13 11:55:25</h3>
-          <p>最后更新日期</p>
-        </div>
-      </el-col>
-      <el-col :span="6">
-        <div class="grid-content bg-purple">
-          <h3>阿大</h3>
-          <p>创建者</p>
-        </div>
-      </el-col>
-    </el-row>
+          <div class="api-group">
+            <div class="group-title">
+              <span>分组</span>
+              <el-button type="text" icon="plus">添 加</el-button>
+            </div>
+            <div class="group-list">
+              <ul>
+                <li class="active">
+                  <span>所有接口</span>
+                  <span>
+                    <i class="el-icon-edit"></i>
+                    <i class="el-icon-delete"></i>
+                  </span>
+                </li>
+                <li>
+                  <span>name</span>
+                  <span>
+                    <i class="el-icon-edit"></i>
+                    <i class="el-icon-delete"></i>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
 
-    <el-row class="third-row">
-      <el-col :span="6">
-        <div class="grid-content bg-purple">
-          <h3>22 个接口</h3>
-          <p>接口总数</p>
         </div>
       </el-col>
-      <el-col :span="6">
-        <div class="grid-content bg-purple">
-          <h3>0 个数据库</h3>
-          <p>数据库数量</p>
-        </div>
-      </el-col>
-      <el-col :span="6">
-        <div class="grid-content bg-purple">
-          <h3>12 人</h3>
-          <p>项目组成员</p>
+
+      <el-col :span="20" class="api-list">
+        <div class="grid-content bg-purple-light">
+          <el-button type="primary"><i class="el-icon-plus"></i> 新增接口</el-button>
+
+
+          <el-table :data="tableData" style="width: 100%">
+            <el-table-column prop="date" label="接口名称" width="180">
+            </el-table-column>
+            <el-table-column prop="name" label="接口URL" width="180">
+            </el-table-column>
+            <el-table-column prop="address" label="最后更新者">
+            </el-table-column>
+            <el-table-column prop="address" label="更新日期">
+            </el-table-column>
+            <el-table-column prop="" label="操作">
+            <template scope="scope">
+                <el-button size="small">编 辑</el-button>
+                <el-button size="small" type="danger">删 除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+
         </div>
       </el-col>
     </el-row>
   </div>
 </template>
+<script>
+  import ApiService from '../../service/api.service'
+
+  import {
+    PROJECT_TYPE
+  } from '../../../config/global.config.js'
+
+  export default {
+    components: {},
+    mounted() {
+      this.ApiService = new ApiService()
+    },
+    computed: {
+      userInfor() {
+        return this.$store.state.userInfor
+      },
+      project() {
+        return this.$store.state.project
+      }
+    },
+    data() {
+      return {
+        searchApiInput: '',
+        tableData: [{
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄'
+        }, {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1519 弄'
+        }, {
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1516 弄'
+        }]
+      }
+    },
+    methods: {
+      searchApi() {
+
+      }
+    }
+  }
+
+</script>
 <style>
+  .api-infor {
+    .search-input {
+      padding: 0 15px;
+    }
+    .api-group {
+      margin-top: 20px;
+      .group-title {
+        position: relative;
+        height: 43px;
+        line-height: 43px;
+        padding: 0 15px;
+        font-size: 14px;
+        cursor: default;
+        border-bottom: 1px solid #dcdcdc;
+        span:first-child {
+          color: #555;
+          font-weight: 700;
+        }
+        button {
+          float: right;
+          padding: 0px;
+          line-height: 43px;
+        }
+      }
+      .group-list {
+        ul {
+          margin: 0px;
+          padding: 0px;
+          li {
+            padding: 15px 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            span:last-child {
+              float: right;
+              i {
+                padding: 0 5px;
+                color: #666;
+              }
+            }
+            &:hover {
+              background: #eee;
+              color: #333;
+            }
+            &.active {
+              background: #f5f5f5;
+            }
+          }
+        }
+      }
+    }
+    .api-list {
+      .el-table {
+        margin-top: 20px;
+        th {
+          background: #fff;
+        }
+        thead div {
+          background: #fff;
+        }
+      }
+    }
+  }
+
+  .menu-left {
+    padding: 20px 0px;
+  }
+
+  .el-row {
+    margin-bottom: 20px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
   .el-col {
-    .bg-purple {
-      background: #fff;
-      border: 1px solid #e5e5e5;
-      border-left: 0px;
-      font-size: 14px;
-      color: #333;
-    }
-    &:first-child .bg-purple {
-      border-left: 1px solid #e5e5e5;
-    }
+    border-radius: 4px;
+  }
+
+  .bg-purple-dark {
+    background: #99a9bf;
+  }
+
+  .bg-purple {
+    background: #fff;
+  }
+
+  .bg-purple-light {
+    background: #fafafa;
+    padding: 10px 15px;
   }
 
   .grid-content {
     min-height: 36px;
   }
 
-  .project-infor {
-    .title-row {
-      border: 1px solid #e5e5e5;
-      border-bottom: 0px;
-      .grid-content {
-        height: 130px;
-        border: 0px;
-      }
-      .project-name {
-        .grid-content {
-          p {
-            font-size: 24px;
-            color: #20a0ff;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-      }
-      p {
-        margin: 0px;
-        line-height: 130px;
-        padding-left: 15px;
-      }
-      button {
-        line-height: 130px;
-        padding-top: 0px;
-        padding-bottom: 0px;
-      }
-    }
-    .second-row,
-    .third-row {
-      .grid-content {
-        padding: 20px 15px;
-        h3 {
-          margin: 0px;
-          font-size: 18px;
-          margin-bottom: 12px;
-        }
-        p {
-          margin: 0px;
-          font-size: 12px;
-          color: #b6b6b6;
-        }
-      }
-    }
-    .third-row {
-      margin-top: 20px;
-    }
+  .row-bg {
+    padding: 10px 0;
+    background-color: #f9fafc;
   }
 
 </style>

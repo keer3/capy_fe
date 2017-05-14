@@ -253,6 +253,7 @@
     .title-row {
       border: 1px solid #e5e5e5;
       border-bottom: 0px;
+      margin-bottom: 0;
       .grid-content {
         height: 130px;
         border: 0px;
