@@ -42,15 +42,23 @@
 
 
           <el-table :data="apiList" style="width: 100%">
-            <el-table-column prop="name" label="接口名称" width="180">
+            <el-table-column prop="name" label="接口名称" width="120">
+              <template scope="scope">
+                <span :class="scope.row.status === '1' ? 'api-used' : 'api-unused'"></span>
+                <span>{{ scope.row.name }}</span>
+              </template>
             </el-table-column>
-            <el-table-column prop="url" label="接口URL" width="180">
+            <el-table-column prop="url" label="接口URL">
+              <template scope="scope">
+                <span class="api-type">{{ scope.row.type }}</span>
+                <span>{{ scope.row.url }}</span>
+              </template>
             </el-table-column>
-            <el-table-column prop="update_userId" label="最后更新者">
+            <el-table-column prop="update_userId" label="最后更新者" width="120">
             </el-table-column>
             <el-table-column prop="update_time" label="更新日期">
             </el-table-column>
-            <el-table-column prop="" label="操作">
+            <el-table-column prop="" label="操作" width="150">
               <template scope="scope">
                 <el-button size="small">编 辑</el-button>
                 <el-button size="small" type="danger">删 除</el-button>
@@ -277,6 +285,32 @@
         thead div {
           background: #fff;
         }
+      }
+      .api-used, .api-unused {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #4caf50;
+        display: inline-block;
+        margin-right: 5px;
+      }
+      .api-unused {
+        background: #9e9e9e;
+      }
+      .api-type {
+        border-radius: 3px;
+        margin-right: 8px;
+        font-size: 12px;
+        display: inline-block;
+        width: 55px;
+        height: 20px;
+        line-height: 20px;
+        text-align: center;
+        text-indent: 0;
+        cursor: pointer;
+        color: #fff;
+        background-color: #4caf50;
+        border: 1px solid #43a047;
       }
     }
   }
