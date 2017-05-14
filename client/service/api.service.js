@@ -17,4 +17,12 @@ export default class ProjectService extends HTTP {
     return this.post('apiGroup/add', params)
   }
 
+  getAllApi ({ projectId }) {
+    return this.get(`api/getAllApi?projectId=${projectId}`)
+  }
+
+  getApiByGroup ({ groupId }) {
+    return this.get(`api/getApiByGroup?groupId=${groupId}`)
+  }
+
 }

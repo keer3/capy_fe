@@ -119,7 +119,7 @@
   </div>
 </template>
 <script>
-  import ProjectApi from './ProjectApi.vue'
+  import ProjectApi from '../Api/ApiList.vue'
   import ProjectMember from './ProjectMember.vue'
   import ProjectService from '../../service/project.service'
   import {

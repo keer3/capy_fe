@@ -12,20 +12,21 @@
           <div class="api-group">
             <div class="group-title">
               <span>分组</span>
-              <el-button type="text" icon="plus" @click="addGroupDialog = true; addDialogTitle = '添加分组'">添 加</el-button>
+              <el-button type="text" icon="plus" @click="handleAddGroup">添 加</el-button>
             </div>
             <div class="group-list">
               <ul>
-                <li class="active">
+                <li :class="groupSelect === 'all' ? 'active' : ''" @click="searchApiList('all')">
                   <span>所有接口</span>
-                  <span>
+                  <span>共 {{ apiCount }} 个
                   </span>
                 </li>
-                <li v-for="group of groupList">
+
+                <li v-for="group of groupList" @click="searchApiList(group.id)" :class="groupSelect ===  group.id ? 'active' : ''">
                   <span>{{ group.name }}</span>
                   <span>
                     <i class="el-icon-edit" @click="handleEditGroup(group)"></i>
-                    <i class="el-icon-delete"></i>
+                    <i class="el-icon-delete" @click="handleDeleteGroup(group)"></i>
                   </span>
                 </li>
               </ul>
@@ -40,14 +41,14 @@
           <el-button type="primary"><i class="el-icon-plus"></i> 新增接口</el-button>
 
 
-          <el-table :data="tableData" style="width: 100%">
-            <el-table-column prop="date" label="接口名称" width="180">
+          <el-table :data="apiList" style="width: 100%">
+            <el-table-column prop="name" label="接口名称" width="180">
             </el-table-column>
-            <el-table-column prop="name" label="接口URL" width="180">
+            <el-table-column prop="url" label="接口URL" width="180">
             </el-table-column>
-            <el-table-column prop="address" label="最后更新者">
+            <el-table-column prop="update_userId" label="最后更新者">
             </el-table-column>
-            <el-table-column prop="address" label="更新日期">
+            <el-table-column prop="update_time" label="更新日期">
             </el-table-column>
             <el-table-column prop="" label="操作">
               <template scope="scope">
@@ -62,14 +63,24 @@
     </el-row>
 
     <el-dialog :title="addDialogTitle" :visible.sync="addGroupDialog" size="tiny">
-      <el-form label-position="left" :model="numberValidateForm" ref="numberValidateForm" label-width="100px" class="demo-ruleForm">
+      <el-form label-position="left" :model="group" ref="group" label-width="100px" class="demo-ruleForm">
         <el-form-item label="分组名" prop="groupName">
-          <el-input v-model="groupNameToAdd"></el-input>
+          <el-input v-model="group.name"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addGroupDialog = false">取 消</el-button>
         <el-button type="primary" @click="addGroup">保 存</el-button>
+      </span>
+    </el-dialog>
+
+
+    <el-dialog title="提示" :visible.sync="deleteGroupDialog" size="tiny">
+      <p>确认删除分组<span style="color: #ff4949">【{{ group.name }}】</span>？</p>
+      <p>删除后分组下的接口都会被删除，将不再恢复！</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteGroupDialog = false">取 消</el-button>
+        <el-button type="danger" @click="delApiGroup">删 除</el-button>
       </span>
     </el-dialog>
 
@@ -87,6 +98,7 @@
     mounted() {
       this.ApiService = new ApiService()
       this.getApiGroupList()
+      this.searchApiList('all')
     },
     computed: {
       userInfor() {
@@ -102,28 +114,33 @@
         groupList: [],
         addGroupDialog: false,
         addDialogTitle: '添加分组',
-        groupNameToAdd: '',
-        groupToEdit: {},
-        tableData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }]
+        group: {},
+        deleteGroupDialog: false,
+        apiList: [],
+        groupSelect: 'all',
+        apiCount: 0
       }
     },
     methods: {
+      searchApiList(groupId) {
+        this.groupSelect = groupId
+        if (groupId === 'all') {
+          this.ApiService.getAllApi({
+            projectId: this.project.id
+          }).then(res => {
+            if (res.status === 200) {
+              this.apiList = res.data
+              this.apiCount = this.apiList.length
+            }
+          })
+        } else {
+          this.ApiService.getApiByGroup({
+            groupId: groupId
+          }).then(res => {
+            this.apiList = res.data
+          })
+        }
+      },
       searchApi() {
 
       },
@@ -140,10 +157,10 @@
         if (this.addDialogTitle === '添加分组') {
           this.ApiService.addGroup({
             projectId: this.project.id,
-            name: this.groupNameToAdd
+            name: this.group.name
           }).then(res => {
             if (res.status === 200) {
-              this.groupNameToAdd = ''
+              this.group = {}
               this.getApiGroupList()
               this.addGroupDialog = false
               this.$message({
@@ -154,10 +171,10 @@
           })
         } else {
           this.ApiService.renameGroup({
-            groupId: this.groupToEdit.id,
-            name: this.groupNameToAdd
+            groupId: this.group.id,
+            name: this.group.name
           }).then(res => {
-            this.groupNameToAdd = ''
+            this.group = {}
             this.getApiGroupList()
             this.addGroupDialog = false
             this.$message({
@@ -169,9 +186,30 @@
       },
       handleEditGroup(group) {
         this.addGroupDialog = true
-        this.groupToEdit = group
-        this.groupNameToAdd = group.name
+        this.group = group
         this.addDialogTitle = '编辑分组'
+      },
+      handleDeleteGroup(group) {
+        this.deleteGroupDialog = true
+        this.group = group
+      },
+      handleAddGroup() {
+        this.addGroupDialog = true
+        this.addDialogTitle = '添加分组'
+        this.group = {}
+      },
+      delApiGroup() {
+        this.ApiService.delGroup({
+          groupId: this.group.id
+        }).then(res => {
+          this.group = {}
+          this.getApiGroupList()
+          this.deleteGroupDialog = false
+          this.$message({
+            type: 'success',
+            message: `删除成功！`
+          })
+        })
       }
     }
   }
