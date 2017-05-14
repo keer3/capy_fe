@@ -61,7 +61,7 @@
             <el-table-column prop="" label="操作" width="150">
               <template scope="scope">
                 <el-button size="small">编 辑</el-button>
-                <el-button size="small" type="danger">删 除</el-button>
+                <el-button size="small" type="danger" @click="handleDelApi(scope.row)">删 除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -89,6 +89,15 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="deleteGroupDialog = false">取 消</el-button>
         <el-button type="danger" @click="delApiGroup">删 除</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="提示" :visible.sync="deleteApiDialog" size="tiny">
+      <p>确认删除接口<span style="color: #ff4949">【{{ api.name }}】</span>？</p>
+      <p>删除后将不再恢复！</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteApiDialog = false">取 消</el-button>
+        <el-button type="danger" @click="delApi">删 除</el-button>
       </span>
     </el-dialog>
 
@@ -126,10 +135,31 @@
         deleteGroupDialog: false,
         apiList: [],
         groupSelect: 'all',
-        apiCount: 0
+        apiCount: 0,
+        deleteApiDialog: false,
+        api: {}
       }
     },
     methods: {
+      handleDelApi(api) {
+        this.deleteApiDialog = true
+        this.api = api
+      },
+      delApi() {
+        this.ApiService.delApi({
+          apiId: this.api.id
+        }).then(res => {
+          if (res.status === 200) {
+            this.api = {}
+            this.searchApiList(this.groupSelect)
+            this.deleteApiDialog = false
+            this.$message({
+              type: 'success',
+              message: `删除成功！`
+            })
+          }
+        })
+      },
       searchApiList(groupId) {
         this.groupSelect = groupId
         if (groupId === 'all') {
@@ -286,7 +316,8 @@
           background: #fff;
         }
       }
-      .api-used, .api-unused {
+      .api-used,
+      .api-unused {
         width: 10px;
         height: 10px;
         border-radius: 50%;
