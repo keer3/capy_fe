@@ -195,17 +195,19 @@
         })
       },
       handleCurrentChange(val) {
-        this.ProjectService.getProjectInfo({
-          projectId: val.id
-        }).then(res => {
-          if (res.status === 200) {
-            res.data.update_time = Moment(res.data.update_time).format('YYYY-MM-DD HH:mm:ss')
-            this.$store.commit('SAVE_PROJECT', res.data)
-            this.$router.push({
-              path: '/project'
-            })
-          }
-        })
+        if (!this.deleteProjectDialogVisible && !this.addProjectDialogVisible) {
+          this.ProjectService.getProjectInfo({
+            projectId: val.id
+          }).then(res => {
+            if (res.status === 200) {
+              res.data.update_time = Moment(res.data.update_time).format('YYYY-MM-DD HH:mm:ss')
+              this.$store.commit('SAVE_PROJECT', res.data)
+              this.$router.push({
+                path: '/project'
+              })
+            }
+          })
+        }
       }
     }
   }

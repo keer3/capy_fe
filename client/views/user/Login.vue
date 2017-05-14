@@ -60,7 +60,7 @@
             // 将用户信息保存到vuex
             this.$store.commit('SAVE_USER_INFOR', data)
             this.$router.push({
-              path: '/home'
+              path: '/project/list'
             })
           }
         })

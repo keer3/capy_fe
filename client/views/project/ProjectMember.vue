@@ -3,12 +3,12 @@
     <div class="content">
       <div class="search">
         <el-input placeholder="请输入内容" v-model="searchInput">
-          <el-select v-model="searchSelect" slot="prepend" placeholder="请选择">
+          <el-select v-model="searchType" slot="prepend" placeholder="请选择">
             <el-option label="用户名" value="username"></el-option>
             <el-option label="联系方式" value="phone"></el-option>
             <el-option label="邮箱" value="email"></el-option>
           </el-select>
-          <el-button slot="append" icon="search">搜索用户</el-button>
+          <el-button slot="append" icon="search" @click="searchResultDialog = true">搜索用户</el-button>
         </el-input>
       </div>
 
@@ -26,11 +26,11 @@
           </li>
         </ul>
 
-        <p class="kind">协作成员</p>
+        <p class="kind" v-if="memberList.length > 1">协作成员</p>
 
         <el-row :gutter="20">
 
-          <el-col v-for="member of memberList" :span="12" :xs="12" :sm="8" :md="6" :lg="6">
+          <el-col v-for="member of memberList" :span="12" :xs="12" :sm="8" :md="6" :lg="6" v-if="member.id !== project.create_userId">
             <ul class="member">
               <li class="pull-left name-summary-li">{{ member.username }}</li>
               <li class="pull-left people-li">
@@ -47,7 +47,34 @@
 
       </div>
 
+      <el-dialog title="搜索结果" :visible.sync="searchResultDialog" size="tiny" class="member-list">
+        <ul class="member">
+          <li class="pull-left name-summary-li">{{ project.create_user.username }}</li>
+          <li class="pull-left people-li">
+            <p class="name">{{ project.create_user.username }}</p>
+            <p class="phone">{{ project.create_user.phone }}</p>
+          </li>
+          <li class="pull-right menu">
+            加入
+          </li>
+        </ul>
+        <ul class="member">
+          <li class="pull-left name-summary-li">{{ project.create_user.username }}</li>
+          <li class="pull-left people-li">
+            <p class="name">{{ project.create_user.username }}</p>
+            <p class="phone">{{ project.create_user.phone }}</p>
+          </li>
+          <li class="pull-right menu">
+            <i class="el-icon-more"></i>
+          </li>
+        </ul>
+      </el-dialog>
+
     </div>
+
+
+
+
   </div>
 </template>
 <script>
@@ -74,8 +101,16 @@
     data() {
       return {
         searchInput: '',
-        searchSelect: '',
-        memberList: []
+        searchType: 'username',
+        memberList: [],
+        searchResult: [],
+        searchResultDialog: false
+      }
+    },
+    methods: {
+      searchUser() {
+        console.log('hhh')
+        this.searchResultDialog = true;
       }
     }
   }
