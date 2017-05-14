@@ -12,21 +12,19 @@
           <div class="api-group">
             <div class="group-title">
               <span>分组</span>
-              <el-button type="text" icon="plus">添 加</el-button>
+              <el-button type="text" icon="plus" @click="addGroupDialog = true; addDialogTitle = '添加分组'">添 加</el-button>
             </div>
             <div class="group-list">
               <ul>
                 <li class="active">
                   <span>所有接口</span>
                   <span>
-                    <i class="el-icon-edit"></i>
-                    <i class="el-icon-delete"></i>
                   </span>
                 </li>
                 <li v-for="group of groupList">
                   <span>{{ group.name }}</span>
                   <span>
-                    <i class="el-icon-edit"></i>
+                    <i class="el-icon-edit" @click="handleEditGroup(group)"></i>
                     <i class="el-icon-delete"></i>
                   </span>
                 </li>
@@ -52,7 +50,7 @@
             <el-table-column prop="address" label="更新日期">
             </el-table-column>
             <el-table-column prop="" label="操作">
-            <template scope="scope">
+              <template scope="scope">
                 <el-button size="small">编 辑</el-button>
                 <el-button size="small" type="danger">删 除</el-button>
               </template>
@@ -62,6 +60,19 @@
         </div>
       </el-col>
     </el-row>
+
+    <el-dialog :title="addDialogTitle" :visible.sync="addGroupDialog" size="tiny">
+      <el-form label-position="left" :model="numberValidateForm" ref="numberValidateForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="分组名" prop="groupName">
+          <el-input v-model="groupNameToAdd"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addGroupDialog = false">取 消</el-button>
+        <el-button type="primary" @click="addGroup">保 存</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -89,6 +100,10 @@
       return {
         searchApiInput: '',
         groupList: [],
+        addGroupDialog: false,
+        addDialogTitle: '添加分组',
+        groupNameToAdd: '',
+        groupToEdit: {},
         tableData: [{
           date: '2016-05-02',
           name: '王小虎',
@@ -116,10 +131,47 @@
         this.ApiService.getGroupList({
           projectId: this.project.id
         }).then(res => {
-          if(res.status === 200) {
+          if (res.status === 200) {
             this.groupList = res.data
           }
         })
+      },
+      addGroup() {
+        if (this.addDialogTitle === '添加分组') {
+          this.ApiService.addGroup({
+            projectId: this.project.id,
+            name: this.groupNameToAdd
+          }).then(res => {
+            if (res.status === 200) {
+              this.groupNameToAdd = ''
+              this.getApiGroupList()
+              this.addGroupDialog = false
+              this.$message({
+                type: 'success',
+                message: `添加成功！`
+              })
+            }
+          })
+        } else {
+          this.ApiService.renameGroup({
+            groupId: this.groupToEdit.id,
+            name: this.groupNameToAdd
+          }).then(res => {
+            this.groupNameToAdd = ''
+            this.getApiGroupList()
+            this.addGroupDialog = false
+            this.$message({
+              type: 'success',
+              message: `编辑成功！`
+            })
+          })
+        }
+      },
+      handleEditGroup(group) {
+        this.addGroupDialog = true
+        this.groupToEdit = group
+        this.groupNameToAdd = group.name
+        this.addDialogTitle = '编辑分组'
       }
     }
   }
