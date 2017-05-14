@@ -22,7 +22,7 @@
             <p class="phone">{{ project.create_user.phone }}</p>
           </li>
           <li class="pull-right menu">
-            <i class="el-icon-more"></i>
+            <i class="el-icon-star-on" style="color: #ffb12f"></i>
           </li>
         </ul>
 
@@ -38,7 +38,7 @@
                 <p class="phone">{{ member.phone }}</p>
               </li>
               <li class="pull-right menu">
-                <i class="el-icon-more"></i>
+                <i class="el-icon-delete" @click="handleDelete(member)"></i>
               </li>
             </ul>
           </el-col>
@@ -62,6 +62,15 @@
         <p style="text-align: center" v-show="searchResult.length < 1">抱歉，没找到该用户！</p>
       </el-dialog>
 
+      <el-dialog title="提示" :visible.sync="deleteProjectDialogVisible" size="tiny">
+        <p>确认删除协作者<span style="color: #ff4949">【{{ userToDel.username }}】</span>？</p>
+        <p>删除后该用户将无法浏览该项目！</p>
+        <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteProjectDialogVisible = false">取 消</el-button>
+        <el-button type="danger" @click="delUserToProject">删 除</el-button>
+      </span>
+      </el-dialog>
+
     </div>
 
 
@@ -71,6 +80,7 @@
 </template>
 <script>
   import ProjectService from '../../service/project.service'
+  import Moment from 'moment'
   export default {
     mounted() {
       this.ProjectService = new ProjectService()
@@ -90,7 +100,9 @@
         searchType: 'username',
         memberList: [],
         searchResult: [],
-        searchResultDialog: false
+        searchResultDialog: false,
+        deleteProjectDialogVisible: false,
+        userToDel: {}
       }
     },
     methods: {
@@ -119,9 +131,31 @@
           if (res.status === 200) {
             member.exist = true
             this.reload()
+            this.project.userCount += 1
             this.$message({
               type: 'success',
               message: `添加成功！`
+            })
+          }
+        })
+      },
+      handleDelete(member) {
+        this.deleteProjectDialogVisible = true
+        this.userToDel = member
+        console.log(this.userToDel)
+      },
+      delUserToProject() {
+        this.ProjectService.delUserToProject({
+          userId: this.userToDel.id,
+          projectId: this.project.id
+        }).then(res => {
+          if (res.status === 200) {
+            this.reload()
+            this.project.userCount -= 1
+            this.deleteProjectDialogVisible = false
+            this.$message({
+              type: 'success',
+              message: `删除成功！`
             })
           }
         })

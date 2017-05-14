@@ -31,4 +31,8 @@ export default class ProjectService extends HTTP {
   addUserToProject (params = {}) {
     return this.post('project/addUserToProject', params)
   }
+
+  delUserToProject (params = {}) {
+    return this.post('project/delUserToProject', params)
+  }
 }
