@@ -8,7 +8,7 @@
             <el-option label="联系方式" value="phone"></el-option>
             <el-option label="邮箱" value="email"></el-option>
           </el-select>
-          <el-button slot="append" icon="search" @click="searchResultDialog = true">搜索用户</el-button>
+          <el-button slot="append" icon="search" @click="searchUser">搜索用户</el-button>
         </el-input>
       </div>
 
@@ -48,26 +48,18 @@
       </div>
 
       <el-dialog title="搜索结果" :visible.sync="searchResultDialog" size="tiny" class="member-list">
-        <ul class="member">
-          <li class="pull-left name-summary-li">{{ project.create_user.username }}</li>
+        <ul class="member" v-for="member of searchResult">
+          <li class="pull-left name-summary-li">{{ member.username }}</li>
           <li class="pull-left people-li">
-            <p class="name">{{ project.create_user.username }}</p>
-            <p class="phone">{{ project.create_user.phone }}</p>
+            <p class="name">{{ member.username }}</p>
+            <p class="phone">{{ member.phone }}</p>
           </li>
           <li class="pull-right menu">
-            加入
+            <el-button type="text" @click="addUserToProject(member)" v-if="!member.exist">加入</el-button>
+            <el-button type="text" v-else disabled>已加入</el-button>
           </li>
         </ul>
-        <ul class="member">
-          <li class="pull-left name-summary-li">{{ project.create_user.username }}</li>
-          <li class="pull-left people-li">
-            <p class="name">{{ project.create_user.username }}</p>
-            <p class="phone">{{ project.create_user.phone }}</p>
-          </li>
-          <li class="pull-right menu">
-            <i class="el-icon-more"></i>
-          </li>
-        </ul>
+        <p style="text-align: center" v-show="searchResult.length < 1">抱歉，没找到该用户！</p>
       </el-dialog>
 
     </div>
@@ -82,13 +74,7 @@
   export default {
     mounted() {
       this.ProjectService = new ProjectService()
-      this.ProjectService.findUserByProject({
-        projectId: this.project.id
-      }).then(res => {
-        if (res.status === 200) {
-          this.memberList = res.data
-        }
-      })
+      this.reload()
     },
     computed: {
       userInfor() {
@@ -109,8 +95,45 @@
     },
     methods: {
       searchUser() {
-        console.log('hhh')
-        this.searchResultDialog = true;
+        this.ProjectService.searchUser({
+          searchInput: this.searchInput,
+          searchType: this.searchType
+        }).then(res => {
+          if (res.status === 200) {
+            this.searchResult = res.data
+            const userId = this.memberList.map(s => {
+              return s.id
+            })
+            this.searchResult.forEach(s => {
+              s.exist = userId.includes(s.id)
+            })
+            this.searchResultDialog = true;
+          }
+        })
+      },
+      addUserToProject(member) {
+        this.ProjectService.addUserToProject({
+          userId: member.id,
+          projectId: this.project.id
+        }).then(res => {
+          if (res.status === 200) {
+            member.exist = true
+            this.reload()
+            this.$message({
+              type: 'success',
+              message: `添加成功！`
+            })
+          }
+        })
+      },
+      reload() {
+        this.ProjectService.findUserByProject({
+          projectId: this.project.id
+        }).then(res => {
+          if (res.status === 200) {
+            this.memberList = res.data
+          }
+        })
       }
     }
   }

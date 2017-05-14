@@ -23,4 +23,12 @@ export default class ProjectService extends HTTP {
   findUserByProject ({ projectId }) {
     return this.get(`project/findUserByProject?projectId=${projectId}`)
   }
+
+  searchUser ({ searchInput, searchType }) {
+    return this.get(`user/findUser?searchInput=${searchInput}&searchType=${searchType}`)
+  }
+
+  addUserToProject (params = {}) {
+    return this.post('project/addUserToProject', params)
+  }
 }
