@@ -48,14 +48,14 @@
 
         <el-table-column prop="" label="[类型]/限制">
           <template scope="scope">
-            <span>[{{ scope.row.type }}]</span>
+            <span>[{{ scope.row.type }}]</span>/
             <span>{{ scope.row.limit }}</span>
           </template>
         </el-table-column>
 
         <el-table-column prop="" label="示例">
           <template scope="scope">
-            <el-button size="small">查看</el-button>
+            <el-button size="small" @click="handleApiParamExample(scope.row)">查看</el-button>
           </template>
         </el-table-column>
 
@@ -103,6 +103,14 @@
       </el-tabs>
     </div>
 
+    <el-dialog :title="paramExample.title + '参数示例'" :visible.sync="apiParamExampleDialog" size="tiny">
+      <span>{{ paramExample.value }}</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="apiParamExampleDialog = false">取 消</el-button>
+    <el-button type="primary" @click="apiParamExampleDialog = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -114,6 +122,8 @@
     },
     data() {
       return {
+        apiParamExampleDialog: false,
+        paramExample: {},
         tableData: [{
           date: '2016-05-02',
           name: '王小虎',
@@ -142,6 +152,13 @@
       }
     },
     methods: {
+      handleApiParamExample(param) {
+        this.apiParamExampleDialog = true
+        this.paramExample = {
+          title: param.name,
+          value: param.example
+        }
+      },
       backToApiList() {
         console.log('backToApiList')
         this.$emit('backToApiList', false)
@@ -182,7 +199,8 @@
         float: left;
         margin-right: 10px;
         &.unused {
-          background: #9e9e9e;
+          background-color: #f2f2f2;
+          color: #9e9e9e;
         }
       }
       p {
@@ -196,8 +214,8 @@
         .api-protocol,
         .api-type {
           width: 54px;
-          height: 21px;
-          line-height: 21px;
+          height: 22px;
+          line-height: 22px;
           color: #fff;
           display: inline-block;
           text-align: center;
@@ -232,17 +250,17 @@
         font-size: 12px;
         display: inline-block;
         width: 55px;
-        height: 20px;
-        line-height: 20px;
+        height: 22px;
+        line-height: 22px;
         text-align: center;
         text-indent: 0;
         cursor: pointer;
         color: #fff;
         background-color: #4caf50;
         border: 1px solid #43a047;
-        &.unused{
+        &.unused {
           background: #9e9e9e;
-          border: none;
+          border: 1px solid #828282;
         }
       }
     }
