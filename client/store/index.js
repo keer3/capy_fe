@@ -7,7 +7,9 @@ Vue.use(Vuex)
 const state = {
   userInfor: {},
   project: {},
-  api: {}
+  api: {},
+  apiList: [],
+  group: {}
 }
 
 const mutations = {
@@ -19,6 +21,12 @@ const mutations = {
   },
   SAVE_API (state, api) {
     state.api = api
+  },
+  SAVE_API_LIST (state, apiList) {
+    state.apiList = apiList
+  },
+  SAVE_GROUP (state, group) {
+    state.group = group
   }
 }
 

@@ -122,6 +122,9 @@
       },
       project() {
         return this.$store.state.project
+      },
+      apiList() {
+        return this.$store.state.apiList
       }
     },
     data() {
@@ -132,7 +135,6 @@
         addDialogTitle: '添加分组',
         group: {},
         deleteGroupDialog: false,
-        apiList: [],
         groupSelect: 'all',
         apiCount: 0,
         deleteApiDialog: false,
@@ -178,12 +180,13 @@
       },
       searchApiList(groupId) {
         this.groupSelect = groupId
+        this.$store.commit('SAVE_GROUP', groupId)
         if (groupId === 'all') {
           this.ApiService.getAllApi({
             projectId: this.project.id
           }).then(res => {
             if (res.status === 200) {
-              this.apiList = res.data
+              this.$store.commit('SAVE_API_LIST', res.data)
               this.apiCount = this.apiList.length
             }
           })
@@ -191,7 +194,7 @@
           this.ApiService.getApiByGroup({
             groupId: groupId
           }).then(res => {
-            this.apiList = res.data
+            this.$store.commit('SAVE_API_LIST', res.data)
           })
         }
       },
@@ -242,6 +245,7 @@
         this.addGroupDialog = true
         this.group = group
         this.addDialogTitle = '编辑分组'
+        this.$store.commit('SAVE_API', group)
       },
       handleDeleteGroup(group) {
         this.deleteGroupDialog = true

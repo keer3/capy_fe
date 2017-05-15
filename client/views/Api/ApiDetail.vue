@@ -4,7 +4,7 @@
       <el-button icon="arrow-left" @click="backToApiList">接口列表</el-button>
       <el-button type="primary" icon="information">详情</el-button>
       <el-button icon="edit">编辑</el-button>
-      <el-button icon="delete2">删除</el-button>
+      <el-button icon="delete2" @click="deleteApiDialog = true">删除</el-button>
     </div>
 
     <div class="api-infor">
@@ -141,18 +141,28 @@
         </el-tab-pane>
       </el-tabs>
     </div>
-    
+
     <div class="api-remark">
       <p class="title">备注</p>
       <div class="content">
         {{ api.remark }}
       </div>
     </div>
+
     <el-dialog :title="paramExample.title + '参数示例'" :visible.sync="apiParamExampleDialog" size="tiny">
       <span>{{ paramExample.value }}</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="apiParamExampleDialog = false">取 消</el-button>
         <el-button type="primary" @click="apiParamExampleDialog = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="提示" :visible.sync="deleteApiDialog" size="tiny">
+      <p>确认删除接口<span style="color: #ff4949">【{{ api.name }}】</span>？</p>
+      <p>删除后将不再恢复！</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteApiDialog = false">取 消</el-button>
+        <el-button type="danger" @click="delApi">删 除</el-button>
       </span>
     </el-dialog>
 
@@ -169,7 +179,8 @@
       return {
         apiParamExampleDialog: false,
         paramExample: {},
-        activeName: 'success'
+        activeName: 'success',
+        deleteApiDialog: false
       }
     },
     computed: {
@@ -178,6 +189,12 @@
       },
       api() {
         return this.$store.state.api
+      },
+      apiList() {
+        return this.$store.state.apiList
+      },
+      group() {
+        return this.$store.state.group
       }
     },
     methods: {
@@ -199,7 +216,43 @@
             this.$store.commit('SAVE_API', res.data)
           }
         })
-      }
+      },
+      delApi() {
+        this.ApiService.delApi({
+          apiId: this.api.id
+        }).then(res => {
+          if (res.status === 200) {
+            this.api = {}
+            this.deleteApiDialog = false
+            this.$message({
+              type: 'success',
+              message: `删除成功！`
+            })
+            this.searchApiList(this.group)
+            this.$emit('backToApiList', false)
+          }
+        })
+      },
+      searchApiList(groupId) {
+        this.groupSelect = groupId
+        this.$store.commit('SAVE_GROUP', groupId)
+        if (groupId === 'all') {
+          this.ApiService.getAllApi({
+            projectId: this.project.id
+          }).then(res => {
+            if (res.status === 200) {
+              this.$store.commit('SAVE_API_LIST', res.data)
+              this.apiCount = this.apiList.length
+            }
+          })
+        } else {
+          this.ApiService.getApiByGroup({
+            groupId: groupId
+          }).then(res => {
+            this.$store.commit('SAVE_API_LIST', res.data)
+          })
+        }
+      },
     }
   }
 
@@ -338,7 +391,7 @@
       .el-tabs__header {
         padding: 0px;
       }
-      .el-tab-pane{
+      .el-tab-pane {
         padding: 0px;
       }
       p {
@@ -346,7 +399,7 @@
         color: #1f2d3d;
         line-height: 20px;
       }
-      .el-tabs--border-card{
+      .el-tabs--border-card {
         box-shadow: none;
         border: 1px solid #e5e5e5;
       }
@@ -357,13 +410,13 @@
       border: 1px solid #e5e5e5;
       margin-top: 20px;
       padding: 20px;
-      p.title{
+      p.title {
         margin: 0px;
         border-bottom: 1px solid #e5e5e5;
         font-size: 16px;
         padding-bottom: 10px;
       }
-      .content{
+      .content {
         margin-top: 10px;
         font-size: 16px;
       }
