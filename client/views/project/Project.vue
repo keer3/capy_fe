@@ -9,7 +9,8 @@
 
       <el-tab-pane name="second">
         <span slot="label"><i class="el-icon-document"></i> 接口文档</span>
-        <projectApi />
+        <projectApi v-on:changeApi="handleCurrentChangeApi" v-show="!changeApi"/>
+        <apiDetail v-on:backToApiList="handleCurrentChangeApi" v-show="changeApi" />
       </el-tab-pane>
 
       <el-tab-pane name="third">
@@ -53,6 +54,7 @@
 </template>
 <script>
   import ProjectApi from '../Api/ApiList.vue'
+  import ApiDetail from '../Api/ApiDetail.vue'
   import ProjectMember from './ProjectMember.vue'
   import ProjectService from '../../service/project.service'
   import ProjectDetail from './ProjectDetail.vue'
@@ -64,7 +66,8 @@
     components: {
       ProjectApi,
       ProjectMember,
-      ProjectDetail
+      ProjectDetail,
+      ApiDetail
     },
     mounted() {
       this.ProjectService = new ProjectService()
@@ -101,10 +104,14 @@
             trigger: 'blur'
           }]
         },
-        projectType: PROJECT_TYPE
+        projectType: PROJECT_TYPE,
+        changeApi: false
       }
     },
     methods: {
+      handleCurrentChangeApi(val) {
+        this.changeApi = val
+      },
       changeTap(tapName) {
         this.activeName = tapName
       },

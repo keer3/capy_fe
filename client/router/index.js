@@ -25,11 +25,6 @@ indexRouter.children.push({
   component: require('../views/project/Project.vue')
 })
 
-indexRouter.children.push({
-  path: '/api',
-  component: require('../views/Api/Api.vue')
-})
-
 // 登录路由
 const loginRoute = {
   path: '/login',

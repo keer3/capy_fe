@@ -29,4 +29,8 @@ export default class ProjectService extends HTTP {
     return this.post('api/delApi', params)
   }
 
+  getApiDetail ({ apiId }) {
+    return this.get(`api/getApiDetail?apiId=${apiId}`)
+  }
+
 }

@@ -11,3 +11,8 @@ ol li,
 ul li {
   list-style-type: none;
 }
+
+ul {
+  margin: 0;
+  padding: 0;
+}

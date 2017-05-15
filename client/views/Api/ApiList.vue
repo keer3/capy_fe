@@ -41,7 +41,7 @@
           <el-button type="primary"><i class="el-icon-plus"></i> 新增接口</el-button>
 
 
-          <el-table :data="apiList" style="width: 100%" highlight-current-row @current-change="handleCurrentChange">
+          <el-table :data="apiList" style="width: 100%" @row-click="handleCurrentChange">
             <el-table-column prop="name" label="接口名称" width="120">
               <template scope="scope">
                 <span :class="scope.row.status === '1' ? 'api-used' : 'api-unused'"></span>
@@ -105,13 +105,12 @@
 </template>
 <script>
   import ApiService from '../../service/api.service'
-
+  import Moment from 'moment'
   import {
     PROJECT_TYPE
   } from '../../../config/global.config.js'
 
   export default {
-    components: {},
     mounted() {
       this.ApiService = new ApiService()
       this.getApiGroupList()
@@ -142,9 +141,17 @@
     },
     methods: {
       handleCurrentChange(val) {
-        this.$store.commit('SAVE_API', val)
-        this.$router.push({
-          path: '/api'
+        this.ApiService.getApiDetail({
+          apiId: val.id
+        }).then(res => {
+          if (res.status === 200) {
+            res.data.update_time = Moment(res.data.update_time).format('YYYY-MM-DD HH:mm:ss')
+            res.data.params.forEach(param => {
+              param.value = JSON.parse(param.value)
+            }) 
+            this.$store.commit('SAVE_API', res.data)
+            this.$emit('changeApi', true)
+          }
         })
       },
       handleDelApi(api) {
@@ -315,6 +322,7 @@
     .api-list {
       .el-table {
         margin-top: 20px;
+        cursor: pointer;
         th {
           background: #fff;
         }
