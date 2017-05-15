@@ -41,7 +41,7 @@
           <el-button type="primary"><i class="el-icon-plus"></i> 新增接口</el-button>
 
 
-          <el-table :data="apiList" style="width: 100%">
+          <el-table :data="apiList" style="width: 100%" highlight-current-row @current-change="handleCurrentChange">
             <el-table-column prop="name" label="接口名称" width="120">
               <template scope="scope">
                 <span :class="scope.row.status === '1' ? 'api-used' : 'api-unused'"></span>
@@ -141,6 +141,12 @@
       }
     },
     methods: {
+      handleCurrentChange(val) {
+        this.$store.commit('SAVE_API', val)
+        this.$router.push({
+          path: '/api'
+        })
+      },
       handleDelApi(api) {
         this.deleteApiDialog = true
         this.api = api

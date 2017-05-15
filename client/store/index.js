@@ -6,7 +6,8 @@ Vue.use(Vuex)
 
 const state = {
   userInfor: {},
-  project: {}
+  project: {},
+  api: {}
 }
 
 const mutations = {
@@ -15,6 +16,9 @@ const mutations = {
   },
   SAVE_PROJECT (state, project) {
     state.project = project
+  },
+  SAVE_API (state, api) {
+    state.api = api
   }
 }
 

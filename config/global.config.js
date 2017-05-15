@@ -9,3 +9,8 @@ export const PROJECT_TYPE = [
   { name: '硬件/物联网', value: 'iob' },
   { name: '其他', value: 'other' }
 ]
+
+// 接口请求头部
+export const API_HEADER_PARAMS = {
+
+}

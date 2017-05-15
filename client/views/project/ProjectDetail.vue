@@ -1,61 +1,77 @@
 <template>
-  <div>
-    <el-tabs v-model="activeName" class="second-nav" >
+  <div class="project-infor">
 
-      <el-tab-pane name="first">
-        <span slot="label"><i class="el-icon-date"></i> 项目概况</span>
-        <projectDetail v-on:changeTap="changeTap" />
-      </el-tab-pane>
+    <el-row class="title-row">
+      <el-col :span="6" class="project-name">
+        <div class="grid-content bg-purple">
+          <p><i class="el-icon-menu"></i> {{ project.name }}</p>
+        </div>
+      </el-col>
+      <el-col :span="15">
+        <div class="grid-content bg-purple">
+          <p>{{ project.dec ? project.dec : '暂无项目说明信息' }}</p>
+        </div>
+      </el-col>
+      <el-col :span="3">
+        <div class="grid-content bg-purple">
+          <el-button type="text" @click="handleEdit(project)"><i class="el-icon-edit"></i> 修改</el-button>
+        </div>
+      </el-col>
+    </el-row>
 
-      <el-tab-pane name="second">
-        <span slot="label"><i class="el-icon-document"></i> 接口文档</span>
-        <projectApi />
-      </el-tab-pane>
+    <el-row class="second-row">
+      <el-col :span="6">
+        <div class="grid-content bg-purple">
+          <h3>{{ project.type }}</h3>
+          <p>项目类型</p>
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <div class="grid-content bg-purple">
+          <h3>{{ project.version }}</h3>
+          <p>版本号</p>
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <div class="grid-content bg-purple">
+          <h3>{{ project.update_time }}</h3>
+          <p>最后更新日期</p>
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <div class="grid-content bg-purple">
+          <h3>{{ project.create_user.username }} <span class="tel"> {{ project.create_user.phone}}</span></h3>
+          <p>创建者</p>
+        </div>
+      </el-col>
+    </el-row>
 
-      <el-tab-pane name="third">
-        <span slot="label"><i class="el-icon-upload"></i> 数据字典</span>
-      </el-tab-pane>
-
-      <el-tab-pane name="fourth">
-        <span slot="label"><i class="el-icon-minus"></i> 文档管理</span>
-      </el-tab-pane>
-
-      <el-tab-pane name="fifth">
-        <span slot="label"><i class="el-icon-document"></i> 人员管理</span>
-        <projectMember />
-      </el-tab-pane>
-
-    </el-tabs>
-
-    <el-dialog title="修改项目" :visible.sync="editProjectDialogVisible" class="add-dialog">
-      <el-form :model="projectModel" :rules="rules" ref="projectModel" label-position="left" label-width="80px">
-        <el-form-item label="项目名称" prop="name">
-          <el-input v-model="projectModel.name"></el-input>
-        </el-form-item>
-        <el-form-item label="版本号" prop="version">
-          <el-input v-model="projectModel.version"></el-input>
-        </el-form-item>
-        <el-form-item label="项目类型" prop="type">
-          <el-select v-model="projectModel.type" placeholder="请选择项目类型">
-            <el-option v-for="type of projectType" :label="type.name" :value="type.name"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="项目说明" prop="dec">
-          <el-input type="textarea" v-model="projectModel.dec"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="editProjectDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveEdit">保 存</el-button>
-      </div>
-    </el-dialog>
+    <el-row class="third-row">
+      <el-col :span="6">
+        <div class="grid-content bg-purple" @click="changeTap('second')">
+          <h3>{{ project.apiCount }} 个接口</h3>
+          <p>接口总数</p>
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <div class="grid-content bg-purple" @click="changeTap('third')">
+          <h3>22 个数据库</h3>
+          <p>数据库数量</p>
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <div class="grid-content bg-purple" @click="changeTap('fifth')">
+          <h3>{{ project.userCount}} 人</h3>
+          <p>项目组成员</p>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 <script>
   import ProjectApi from '../Api/ApiList.vue'
   import ProjectMember from './ProjectMember.vue'
   import ProjectService from '../../service/project.service'
-  import ProjectDetail from './ProjectDetail.vue'
   import {
     PROJECT_TYPE
   } from '../../../config/global.config.js'
@@ -63,8 +79,7 @@
   export default {
     components: {
       ProjectApi,
-      ProjectMember,
-      ProjectDetail
+      ProjectMember
     },
     mounted() {
       this.ProjectService = new ProjectService()
@@ -106,7 +121,7 @@
     },
     methods: {
       changeTap(tapName) {
-        this.activeName = tapName
+        this.$emit('changeTap',tapName)
       },
       handleEdit(project) {
         this.editProjectDialogVisible = true
@@ -148,42 +163,7 @@
   }
 
 </script>
-<style>
-  .second-nav {
-    .el-tabs__header {
-      background-color: #fcfcfc;
-      border-bottom: 1px solid #e5e5e5;
-      padding: 0 30px;
-    }
-  }
-
-  .el-tab-pane {
-    padding: 0px 30px 20px 30px;
-  }
-
-  .add-dialog {
-    .el-select {
-      width: 100%;
-    }
-  }
-
-  .el-dialog__close {
-    font-size: 15px;
-  }
-
-  .el-col {
-    .bg-purple {
-      background: #fff;
-      border: 1px solid #e5e5e5;
-      border-left: 0px;
-      font-size: 14px;
-      color: #333;
-    }
-    &:first-child .bg-purple {
-      border-left: 1px solid #e5e5e5;
-    }
-  }
-
+<style lang="">
   .project-infor {
     .title-row {
       border: 1px solid #e5e5e5;
@@ -248,5 +228,4 @@
       }
     }
   }
-
 </style>
