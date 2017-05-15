@@ -148,7 +148,10 @@
             res.data.update_time = Moment(res.data.update_time).format('YYYY-MM-DD HH:mm:ss')
             res.data.params.forEach(param => {
               param.value = JSON.parse(param.value)
-            }) 
+            })
+            res.data.return.forEach(ret => {
+              ret.value = JSON.parse(ret.value)
+            })
             this.$store.commit('SAVE_API', res.data)
             this.$emit('changeApi', true)
           }

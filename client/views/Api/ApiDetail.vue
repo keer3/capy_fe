@@ -29,7 +29,7 @@
 
     <div class="api-params">
       <el-table :data="api.params" style="width: 100%">
-        <el-table-column prop="" label="头部" width="70">
+        <el-table-column prop="" label="参数" width="70">
           <template scope="scope">
             <el-tag type="gray">{{ scope.$index + 1 }}</el-tag>
           </template>
@@ -55,7 +55,7 @@
 
         <el-table-column prop="" label="示例">
           <template scope="scope">
-            <el-button size="small" @click="handleApiParamExample(scope.row)">查看</el-button>
+            <el-button class="api-example" size="small" @click="handleApiParamExample(scope.row)">查看</el-button>
           </template>
         </el-table-column>
 
@@ -63,7 +63,7 @@
           <template scope="scope">
             <ul>
               <li v-for="(paramValue, index) in scope.row.value">
-                <span>{{ index + 1 }}</span>
+                <span class="param-value-num">{{ index + 1 }}</span>
                 <span>{{ paramValue.value }}</span>
               </li>
             </ul>
@@ -84,31 +84,70 @@
     </div>
 
     <div class="api-return">
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="date" label="日期" width="180">
+      <el-table :data="api.return" style="width: 100%">
+        <el-table-column prop="" label="返回" width="70">
+          <template scope="scope">
+            <el-tag type="gray">{{ scope.$index + 1 }}</el-tag>
+          </template>
         </el-table-column>
-        <el-table-column prop="name" label="姓名" width="180">
+
+        <el-table-column prop="" label="" width="80">
+          <template scope="scope">
+            <span :class="scope.row.must ? 'api-type' : 'api-type unused'" v-text="scope.row.must ? '必含' : '非必含'"></span>
+          </template>
         </el-table-column>
-        <el-table-column prop="address" label="地址">
+
+        <el-table-column prop="" label="参数" width="100">
+          <template scope="scope">
+            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.dec }}</span>
+          </template>
         </el-table-column>
+
+        <el-table-column prop="" label="值可能性">
+          <template scope="scope">
+            <ul>
+              <li v-for="(paramValue, index) in scope.row.value">
+                <span class="param-value-num">{{ index + 1 }}</span>
+                <span>{{ paramValue.value }}</span>
+              </li>
+            </ul>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="" label="值说明">
+          <template scope="scope">
+            <ul>
+              <li v-for="(paramValue, index) in scope.row.value">
+                <span>{{ paramValue.dec }}</span>
+              </li>
+            </ul>
+          </template>
+        </el-table-column>
+
       </el-table>
     </div>
 
     <div class="api-return-example">
-      <el-tabs type="border-card">
-        <el-tab-pane>
-          <span slot="label"><i class="el-icon-date"></i> 我的行程</span> 我的行程
+      <el-tabs type="border-card" v-model="activeName">
+        <el-tab-pane disabled>
+          <span slot="label">返回示例：</span>
         </el-tab-pane>
-        <el-tab-pane label="消息中心">消息中心</el-tab-pane>
+        <el-tab-pane label="成功结果" name="success">
+          <p>{{ api.success_return }}</p>
+        </el-tab-pane>
+        <el-tab-pane label="失败结果">
+          <p>{{ api.error_return }}</p>
+        </el-tab-pane>
       </el-tabs>
     </div>
 
     <el-dialog :title="paramExample.title + '参数示例'" :visible.sync="apiParamExampleDialog" size="tiny">
       <span>{{ paramExample.value }}</span>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="apiParamExampleDialog = false">取 消</el-button>
-    <el-button type="primary" @click="apiParamExampleDialog = false">确 定</el-button>
-  </span>
+        <el-button @click="apiParamExampleDialog = false">取 消</el-button>
+        <el-button type="primary" @click="apiParamExampleDialog = false">确 定</el-button>
+      </span>
     </el-dialog>
 
   </div>
@@ -124,23 +163,7 @@
       return {
         apiParamExampleDialog: false,
         paramExample: {},
-        tableData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }]
+        activeName: 'success'
       }
     },
     computed: {
@@ -160,7 +183,6 @@
         }
       },
       backToApiList() {
-        console.log('backToApiList')
         this.$emit('backToApiList', false)
       },
       getApiDetail() {
@@ -199,8 +221,8 @@
         float: left;
         margin-right: 10px;
         &.unused {
-          background-color: #f2f2f2;
-          color: #9e9e9e;
+          background-color: #9e9e9e;
+          color: #ffffff;
         }
       }
       p {
@@ -263,14 +285,91 @@
           border: 1px solid #828282;
         }
       }
+      .api-example {
+        width: 50px;
+        font-size: 13px;
+        background: #f5f5f5;
+        color: #444;
+        border: 1px solid rgba(0, 0, 0, .06);
+      }
+      ul {
+        margin: 3px 0;
+        li {
+          margin: 3px 0;
+        }
+      }
     }
 
     .api-return {
       margin-top: 29px;
+      .api-type {
+        border-radius: 3px;
+        margin-right: 8px;
+        font-size: 12px;
+        display: inline-block;
+        width: 55px;
+        height: 22px;
+        line-height: 22px;
+        text-align: center;
+        text-indent: 0;
+        cursor: pointer;
+        color: #fff;
+        background-color: #4caf50;
+        border: 1px solid #43a047;
+        &.unused {
+          background: #9e9e9e;
+          border: 1px solid #828282;
+        }
+      }
     }
 
     .api-return-example {
       margin-top: 20px;
+      .el-tabs__item.is-disabled {
+        color: #333;
+        cursor: default;
+      }
+      .el-tabs__header {
+        padding: 0px;
+      }
+      .el-tab-pane{
+        padding: 0px;
+      }
+      p {
+        font-size: 14px;
+        color: #1f2d3d;
+        line-height: 20px;
+      }
+    }
+
+    .el-table {
+      th {
+        background: #fff;
+      }
+      thead div {
+        background: #fff;
+      }
+    }
+
+    .param-value-num {
+      width: 25px;
+      height: 25px;
+      line-height: 25px;
+      -webkit-border-radius: 3px;
+      border-radius: 3px;
+      background-color: #f2f2f2;
+      color: #9e9e9e;
+      display: inline-block;
+      font-size: 14px;
+      text-align: center;
+      margin-right: 5px;
+    }
+
+    ul {
+      margin: 3px 0;
+      li {
+        margin: 3px 0;
+      }
     }
   }
 
