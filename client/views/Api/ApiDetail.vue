@@ -141,7 +141,13 @@
         </el-tab-pane>
       </el-tabs>
     </div>
-
+    
+    <div class="api-remark">
+      <p class="title">备注</p>
+      <div class="content">
+        {{ api.remark }}
+      </div>
+    </div>
     <el-dialog :title="paramExample.title + '参数示例'" :visible.sync="apiParamExampleDialog" size="tiny">
       <span>{{ paramExample.value }}</span>
       <span slot="footer" class="dialog-footer">
@@ -339,6 +345,27 @@
         font-size: 14px;
         color: #1f2d3d;
         line-height: 20px;
+      }
+      .el-tabs--border-card{
+        box-shadow: none;
+        border: 1px solid #e5e5e5;
+      }
+    }
+
+    .api-remark {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      margin-top: 20px;
+      padding: 20px;
+      p.title{
+        margin: 0px;
+        border-bottom: 1px solid #e5e5e5;
+        font-size: 16px;
+        padding-bottom: 10px;
+      }
+      .content{
+        margin-top: 10px;
+        font-size: 16px;
       }
     }
 

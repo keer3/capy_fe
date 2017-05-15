@@ -8,9 +8,9 @@
         <router-link to="/project/list"><i class="el-icon-upload"></i>项目管理</router-link>
       </el-menu-item>
       <el-menu-item index="2">
-        <router-link to="/doc"><i class="el-icon-document"></i>文档管理</router-link>
+        <router-link to="/doc"><i class="el-icon-document"></i>任务管理</router-link>
       </el-menu-item>
-      <el-menu-item index="3">人员管理</el-menu-item>
+      <el-menu-item index="3">仓库管理</el-menu-item>
     </el-menu>
   </div>
 </template>
