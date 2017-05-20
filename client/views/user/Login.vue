@@ -2,7 +2,7 @@
   <div class="login">
     <div class="login-header">
       <img src="../../assest/img/logo.png" alt="">
-      <span>这是阿大的毕业设计</span>
+      <span>项目管理让开发更美好</span>
     </div>
     <hr />
     <el-form :inline="true" :model="userInfor">

@@ -206,7 +206,7 @@
         }
       },
       backToApiList() {
-        this.$emit('backToApiList', false)
+        this.$emit('backToApiList', 'apiList')
       },
       getApiDetail() {
         this.ApiService.getApiDetail({

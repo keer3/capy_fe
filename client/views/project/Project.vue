@@ -9,8 +9,9 @@
 
       <el-tab-pane name="second">
         <span slot="label"><i class="el-icon-document"></i> 接口文档</span>
-        <projectApi v-on:changeApi="handleCurrentChangeApi" v-show="!changeApi"/>
-        <apiDetail v-on:backToApiList="handleCurrentChangeApi" v-show="changeApi" />
+        <apiList v-on:changeApi="handleCurrentChangeApi" v-show="changeApi === 'apiList'"/>
+        <apiDetail v-on:backToApiList="handleCurrentChangeApi" v-show="changeApi === 'apiDetail'" />
+        <apiEdit v-show="changeApi === 'apiEdit'" />
       </el-tab-pane>
 
       <el-tab-pane name="third">
@@ -53,8 +54,9 @@
   </div>
 </template>
 <script>
-  import ProjectApi from '../Api/ApiList.vue'
+  import ApiList from '../Api/ApiList.vue'
   import ApiDetail from '../Api/ApiDetail.vue'
+  import ApiEdit from '../Api/ApiEdit.vue'
   import ProjectMember from './ProjectMember.vue'
   import ProjectService from '../../service/project.service'
   import ProjectDetail from './ProjectDetail.vue'
@@ -64,10 +66,11 @@
 
   export default {
     components: {
-      ProjectApi,
+      ApiList,
       ProjectMember,
       ProjectDetail,
-      ApiDetail
+      ApiDetail,
+      ApiEdit
     },
     mounted() {
       this.ProjectService = new ProjectService()
@@ -105,11 +108,12 @@
           }]
         },
         projectType: PROJECT_TYPE,
-        changeApi: false
+        changeApi: 'apiList'
       }
     },
     methods: {
       handleCurrentChangeApi(val) {
+        console.log('val', val)
         this.changeApi = val
       },
       changeTap(tapName) {

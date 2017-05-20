@@ -38,7 +38,7 @@
 
       <el-col :span="20" class="api-list">
         <div class="grid-content bg-purple-light">
-          <el-button type="primary"><i class="el-icon-plus"></i> 新增接口</el-button>
+          <el-button type="primary" @click="addApi"><i class="el-icon-plus"></i> 新增接口</el-button>
 
 
           <el-table :data="apiList" style="width: 100%" @row-click="handleCurrentChange">
@@ -142,6 +142,9 @@
       }
     },
     methods: {
+      addApi() {
+        this.$emit('changeApi', 'apiEdit')
+      },
       handleCurrentChange(val) {
         this.ApiService.getApiDetail({
           apiId: val.id
@@ -155,7 +158,7 @@
               ret.value = JSON.parse(ret.value)
             })
             this.$store.commit('SAVE_API', res.data)
-            this.$emit('changeApi', true)
+            this.$emit('changeApi', 'apiDetail')
           }
         })
       },
