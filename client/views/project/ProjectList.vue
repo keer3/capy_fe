@@ -229,6 +229,7 @@
   .table-content {
     margin-top: 20px;
     .el-table {
+      cursor: pointer;
       th {
         background: #fff;
       }

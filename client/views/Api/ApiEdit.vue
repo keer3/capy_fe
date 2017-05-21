@@ -45,7 +45,7 @@
       <p class="title">请求头部：</p>
       <div class="content">
         <div class="repeat-row" v-for="(header, index) in apiForm.apiHeader">
-          <el-button icon="minus" size="small"  @click="removeApiHeader(index)"></el-button>
+          <el-button icon="minus" size="small" @click="removeApiHeader(index)"></el-button>
           <span>头部标签：</span>
           <el-select v-model="header.name" placeholder="请选择">
             <el-option v-for="h in apiHeader" :label="h" :value="h">
@@ -59,13 +59,64 @@
         <el-button type="primary" size="small" @click="addApiHeader">添加 <i class="el-icon-plus el-icon--right"></i></el-button>
       </p>
     </div>
+
+    <div class="row api-params">
+      <p class="title">请求参数：</p>
+      <div class="content">
+        <div class="repeat-row" v-for="(params, index) in apiForm.apiParams">
+          <div class="simple">
+            <el-button icon="minus" size="small" @click="removeApiParams(index)"></el-button>
+            <el-select v-model="params.must" placeholder="请选择" class="params-must">
+              <el-option label="必填" value="1"></el-option>
+              <el-option label="选填" value="0"></el-option>
+            </el-select>
+            <span>参数名称：</span>
+            <el-input class="params-input" v-model="params.name" placeholder="请输入内容"></el-input>
+            <span>参数说明：</span>
+            <el-input class="params-input" v-model="params.dec" placeholder="请输入内容"></el-input>
+            <span>参数类型：</span>
+            <el-select v-model="params.type" placeholder="请选择">
+              <el-option v-for="type in apiParamsType" :label="type" :value="type">
+              </el-option>
+            </el-select>
+            <el-button size="small" @click="params.detail = !params.detail">更多参数</el-button>
+          </div>
+          <div class="detail" v-show="params.detail">
+            <p>
+              <span>参数限制：</span>
+              <el-input class="params-input" v-model="params.limit" placeholder="请输入内容"></el-input>
+            </p>
+            <p>
+              <span>参数示例：</span>
+              <el-input class="params-input" v-model="params.example" placeholder="请输入内容"></el-input>
+            </p>
+            <span>值可能性：</span>
+            <div class="param-value">
+              <div v-for="(value, index) in params.value">
+                <el-button icon="minus" size="small" @click="removeParamsValue(params, index)"></el-button>
+                <el-input class="params-input" v-model="value.value" placeholder="请输入内容"></el-input>
+                <span>字段说明：</span>
+                <el-input class="params-input" v-model="value.dec" placeholder="请输入内容"></el-input>
+              </div>
+              <el-button type="primary" size="small" @click="addParamsValue(params)">添加 <i class="el-icon-plus el-icon--right"></i></el-button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <p class="footer">
+        <el-button type="primary" size="small" @click="addApiParams">添加 <i class="el-icon-plus el-icon--right"></i></el-button>
+      </p>
+    </div>
+
   </div>
 </template>
 <script>
   import ApiService from '../../service/api.service'
   import {
     API_TYPE,
-    API_HEADER_PARAMS
+    API_HEADER_PARAMS,
+    API_PARAMS_TYPE
   } from '../../../config/global.config'
 
   export default {
@@ -80,13 +131,12 @@
           status: '',
           protocol: '',
           type: '',
-          apiHeader: [{
-            name: 'Accept',
-            content: 'header'
-          }]
+          apiHeader: [],
+          apiParams: []
         },
         apiType: API_TYPE,
         apiHeader: API_HEADER_PARAMS,
+        apiParamsType: API_PARAMS_TYPE,
         groupList: []
       }
     },
@@ -105,6 +155,27 @@
       }
     },
     methods: {
+      removeApiParams(index) {
+        console.log(this.apiForm.apiParams, index)
+        this.apiForm.apiParams.splice(index, 1)
+      },
+      addApiParams() {
+        this.apiForm.apiParams.push({
+          must: '1',
+          type: '',
+          detail: false,
+          value: []
+        })
+      },
+      removeParamsValue(param, index) {
+        param.value.splice(index, 1)
+      },
+      addParamsValue(param) {
+        param.value.push({
+          value: '',
+          dec: ''
+        })
+      },
       getGroupList() {
         this.ApiService.getGroupList({
           projectId: this.project.id
@@ -157,6 +228,28 @@
         .repeat-row {
           border-bottom: 1px dotted #e5e5e5;
           padding-bottom: 5px;
+        }
+        .params-must {
+          width: 80px;
+        }
+        .detail {
+          margin-left: 130px;
+          p {
+            margin: 0px;
+          }
+          div {
+            width: 100%;
+          }
+          .param-value {
+            margin-left: 80px;
+            position: relative;
+            top: -33px;
+          }
+        }
+      }
+      &.api-params .params-input {
+        &.el-input {
+          width: 200px;
         }
       }
       .footer {

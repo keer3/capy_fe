@@ -54,3 +54,20 @@ export const API_TYPE = [
   'OPTIONS',
   'PATCH'
 ]
+
+// 接口参数类型
+export const API_PARAMS_TYPE = [
+  '[text]',
+  '[file]',
+  '[json]',
+  '[int]',
+  '[float]',
+  '[double]',
+  '[date]',
+  '[datetime]',
+  '[boolean]',
+  '[byte]',
+  '[short]',
+  '[long]',
+  '[array]'
+]

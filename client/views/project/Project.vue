@@ -113,7 +113,6 @@
     },
     methods: {
       handleCurrentChangeApi(val) {
-        console.log('val', val)
         this.changeApi = val
       },
       changeTap(tapName) {
