@@ -11,7 +11,7 @@
         <span slot="label"><i class="el-icon-document"></i> 接口文档</span>
         <apiList v-on:changeApi="handleCurrentChangeApi" v-show="changeApi === 'apiList'"/>
         <apiDetail v-on:backToApiList="handleCurrentChangeApi" v-show="changeApi === 'apiDetail'" />
-        <apiEdit v-show="changeApi === 'apiEdit'" />
+        <apiEdit v-on:backToApiList="handleCurrentChangeApi" v-show="changeApi === 'apiEdit'" />
       </el-tab-pane>
 
       <el-tab-pane name="third">

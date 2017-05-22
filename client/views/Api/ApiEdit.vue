@@ -1,41 +1,42 @@
 <template>
   <div class="api-form">
     <div class="form-header-btn">
-      <el-button icon="arrow-left">接口列表</el-button>
+      <el-button icon="arrow-left" @click="backToApiList">接口列表</el-button>
+      <el-button icon="check" type="primary">保存</el-button>
     </div>
 
     <div class="row">
-      <el-form :inline="true" :model="apiForm" label-width="70px" label-position="left">
-        <el-form-item label="分组">
+      <el-form :inline="true" :model="apiForm" label-width="70px" label-position="left" :rules="apiRules">
+        <el-form-item label="分组" prop="groupId">
           <el-select v-model="apiForm.groupId" placeholder="请选择">
             <el-option v-for="group in groupList" :key="group.id" :label="group.name" :value="group.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="状态" prop="status">
           <el-select v-model="apiForm.status" placeholder="请选择">
             <el-option label="启用" value="1"></el-option>
             <el-option label="弃用" value="0"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="请求协议">
+        <el-form-item label="请求协议" prop="protocol">
           <el-select v-model="apiForm.protocol" placeholder="请选择">
             <el-option label="HTTP" value="HTTP"></el-option>
             <el-option label="HTTPS" value="HTTPS"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="请求方式">
+        <el-form-item label="请求方式" prop="type">
           <el-select v-model="apiForm.type" placeholder="请选择">
             <el-option v-for="type in apiType" :key="type" :label="type" :value="type">
             </el-option>
           </el-select>
         </el-form-item>
       </el-form>
-      <el-form :model="apiForm" label-width="70px" label-position="left">
-        <el-form-item label="URL">
+      <el-form :model="apiForm" label-width="70px" label-position="left" :rules="apiRules" class="main-input">
+        <el-form-item label="URL" prop="url">
           <el-input v-model="apiForm.url"></el-input>
         </el-form-item>
-        <el-form-item label="名称">
+        <el-form-item label="名称" prop="name">
           <el-input v-model="apiForm.name"></el-input>
         </el-form-item>
       </el-form>
@@ -109,6 +110,66 @@
       </p>
     </div>
 
+    <div class="row api-return">
+      <p class="title">返回说明：</p>
+      <div class="content">
+        <div class="repeat-row" v-for="(ret, index) in apiForm.apiReturn">
+          <p>
+            <el-button icon="minus" size="small" @click="removeApiRet(index)"></el-button>
+            <el-select v-model="ret.must" placeholder="请选择" class="params-must">
+              <el-option label="必填" value="1"></el-option>
+              <el-option label="选填" value="0"></el-option>
+            </el-select>
+            <span>字段名称：</span>
+            <el-input class="ret-input" v-model="ret.name" placeholder="请输入内容"></el-input>
+            <span>字段说明：</span>
+            <el-input class="ret-input" v-model="ret.dec" placeholder="请输入内容"></el-input>
+          </p>
+          <span class="ret-value-label">值可能性：</span>
+          <div class="ret-value">
+            <div v-for="(value, index) in ret.value">
+              <el-button icon="minus" size="small" @click="removeRetValue(ret.value, index)"></el-button>
+              <el-input class="ret-input" v-model="value.value" placeholder="请输入内容"></el-input>
+              <span>字段说明：</span>
+              <el-input class="ret-input" v-model="value.dec" placeholder="请输入内容"></el-input>
+            </div>
+            <el-button type="primary" size="small" @click="addRetValue(ret.value)">添加 <i class="el-icon-plus el-icon--right"></i></el-button>
+          </div>
+        </div>
+      </div>
+      <p class="footer">
+        <el-button type="primary" size="small" @click="addApiRet">添加 <i class="el-icon-plus el-icon--right"></i></el-button>
+      </p>
+    </div>
+
+    <div class="api-example">
+      <el-tabs type="border-card" v-model="activeName">
+        <el-tab-pane disabled>
+          <span slot="label">返回示例：</span>
+        </el-tab-pane>
+        <el-tab-pane label="成功结果" name="success">
+          <el-input type="textarea" placeholder="请输入内容" v-model="apiForm.success_return" :autosize="{ minRows: 4 }">
+          </el-input>
+        </el-tab-pane>
+        <el-tab-pane label="失败结果">
+          <el-input type="textarea" placeholder="请输入内容" v-model="apiForm.error_return" :autosize="{ minRows: 4 }">
+          </el-input>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+
+    <div class="row">
+      <p class="title">备注：</p>
+      <el-input type="textarea" placeholder="请输入内容" v-model="apiForm.dec" :autosize="{ minRows: 4 }" style="margin: 15px 5px 5px 5px;">
+      </el-input>
+    </div>
+
+    <div class="form-header-btn" style="margin-top: 15px;text-align: right;">
+      <el-button icon="arrow-left">接口列表</el-button>
+      <el-button icon="check" type="primary">保存</el-button>
+    </div>
+
+
   </div>
 </template>
 <script>
@@ -132,12 +193,25 @@
           protocol: '',
           type: '',
           apiHeader: [],
-          apiParams: []
+          apiParams: [],
+          apiReturn: [],
+          success_return: '',
+          error_return: '',
+          dec: ''
         },
         apiType: API_TYPE,
         apiHeader: API_HEADER_PARAMS,
         apiParamsType: API_PARAMS_TYPE,
-        groupList: []
+        groupList: [],
+        activeName: 'success',
+        apiRules: {
+          url: [
+            {required: true, message: '请输入URL', trigger: 'blur'}
+          ],
+          name: [
+            {required: true, message: '请输入接口名称', trigger: 'blur'}
+          ]
+        }
       }
     },
     computed: {
@@ -155,8 +229,28 @@
       }
     },
     methods: {
+      backToApiList() {
+        this.$emit('backToApiList', 'apiList')
+      },
+      removeApiRet(index) {
+        this.apiForm.apiReturn.splice(index, 1)
+      },
+      addApiRet() {
+        this.apiForm.apiReturn.push({
+          must: '1',
+          value: []
+        })
+      },
+      removeRetValue(value, index) {
+        value.splice(index, 1)
+      },
+      addRetValue(value) {
+        value.push({
+          value: '',
+          dec: ''
+        })
+      },
       removeApiParams(index) {
-        console.log(this.apiForm.apiParams, index)
         this.apiForm.apiParams.splice(index, 1)
       },
       addApiParams() {
@@ -188,7 +282,8 @@
       addApiHeader() {
         this.apiForm.apiHeader.push({
           name: '',
-          content: ''
+          content: '',
+          must: '1'
         })
       },
       removeApiHeader(index) {
@@ -247,6 +342,30 @@
           }
         }
       }
+      .main-input{
+        margin-bottom: 15px;
+        margin-top: 10px;
+        .el-form-item:first-child{
+          margin-bottom: 20px;
+        }
+      }
+      &.api-return {
+        .ret-input.el-input {
+          width: 200px;
+        }
+        p {
+          margin: 0px;
+        }
+        .ret-value-label {
+          position: relative;
+          left: 130px;
+        }
+        .ret-value {
+          margin-left: 210px;
+          position: relative;
+          top: -35px;
+        }
+      }
       &.api-params .params-input {
         &.el-input {
           width: 200px;
@@ -254,6 +373,26 @@
       }
       .footer {
         margin: 0px;
+      }
+    }
+    .api-example {
+      margin-top: 20px;
+      .el-tabs--border-card{
+        border: 1px solid #e5e5e5;
+        box-shadow: none;
+      }
+      .el-tabs__header {
+        padding: 0px;
+        .el-tabs__item.is-disabled {
+          color: #333;
+          font-size: 14px;
+          font-weight: 700;
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+      }
+      .el-tab-pane {
+        padding: 0px;
       }
     }
     .api-header {
