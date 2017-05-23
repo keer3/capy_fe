@@ -9,7 +9,8 @@ const state = {
   project: {},
   api: {},
   apiList: [],
-  group: {}
+  group: {},
+  apiToEdit: {}
 }
 
 const mutations = {
@@ -27,6 +28,9 @@ const mutations = {
   },
   SAVE_GROUP (state, group) {
     state.group = group
+  },
+  SAVE_API_TO_EDIT (state, api) {
+    state.apiToEdit = api
   }
 }
 

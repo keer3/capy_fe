@@ -6,38 +6,38 @@
     </div>
 
     <div class="row">
-      <el-form :inline="true" :model="apiToEdit" label-width="70px" label-position="left" :rules="apiRules">
+      <el-form :inline="true" :model="apiForm" label-width="70px" label-position="left" :rules="apiRules">
         <el-form-item label="分组" prop="groupId">
-          <el-select v-model="apiToEdit.groupId" placeholder="请选择">
-            <el-option v-for="group in groupList" :label="group.name" :value="group.id">
+          <el-select v-model="apiForm.groupId" placeholder="请选择">
+            <el-option v-for="group in groupList" :key="group.id" :label="group.name" :value="group.id">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-select v-model="apiToEdit.status" placeholder="请选择">
+          <el-select v-model="apiForm.status" placeholder="请选择">
             <el-option label="启用" value="1"></el-option>
             <el-option label="弃用" value="0"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="请求协议" prop="protocol">
-          <el-select v-model="apiToEdit.protocol" placeholder="请选择">
+          <el-select v-model="apiForm.protocol" placeholder="请选择">
             <el-option label="HTTP" value="HTTP"></el-option>
             <el-option label="HTTPS" value="HTTPS"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="请求方式" prop="type">
-          <el-select v-model="apiToEdit.type" placeholder="请选择">
+          <el-select v-model="apiForm.type" placeholder="请选择">
             <el-option v-for="type in apiType" :key="type" :label="type" :value="type">
             </el-option>
           </el-select>
         </el-form-item>
       </el-form>
-      <el-form :model="apiToEdit" label-width="70px" label-position="left" :rules="apiRules" class="main-input">
+      <el-form :model="apiForm" label-width="70px" label-position="left" :rules="apiRules" class="main-input">
         <el-form-item label="URL" prop="url">
-          <el-input v-model="apiToEdit.url"></el-input>
+          <el-input v-model="apiForm.url"></el-input>
         </el-form-item>
         <el-form-item label="名称" prop="name">
-          <el-input v-model="apiToEdit.name"></el-input>
+          <el-input v-model="apiForm.name"></el-input>
         </el-form-item>
       </el-form>
     </div>
@@ -45,7 +45,7 @@
     <div class="row api-header">
       <p class="title">请求头部：</p>
       <div class="content">
-        <div class="repeat-row" v-for="(header, index) in apiToEdit.apiHeader">
+        <div class="repeat-row" v-for="(header, index) in apiForm.apiHeader">
           <el-button icon="minus" size="small" @click="removeApiHeader(index)"></el-button>
           <span>头部标签：</span>
           <el-select v-model="header.name" placeholder="请选择">
@@ -64,7 +64,7 @@
     <div class="row api-params">
       <p class="title">请求参数：</p>
       <div class="content">
-        <div class="repeat-row" v-for="(params, index) in apiToEdit.apiParams">
+        <div class="repeat-row" v-for="(params, index) in apiForm.apiParams">
           <div class="simple">
             <el-button icon="minus" size="small" @click="removeApiParams(index)"></el-button>
             <el-select v-model="params.must" placeholder="请选择" class="params-must">
@@ -113,7 +113,7 @@
     <div class="row api-return">
       <p class="title">返回说明：</p>
       <div class="content">
-        <div class="repeat-row" v-for="(ret, index) in apiToEdit.apiReturn">
+        <div class="repeat-row" v-for="(ret, index) in apiForm.apiReturn">
           <p>
             <el-button icon="minus" size="small" @click="removeApiRet(index)"></el-button>
             <el-select v-model="ret.must" placeholder="请选择" class="params-must">
@@ -148,11 +148,11 @@
           <span slot="label">返回示例：</span>
         </el-tab-pane>
         <el-tab-pane label="成功结果" name="success">
-          <el-input type="textarea" placeholder="请输入内容" v-model="apiToEdit.successReturn" :autosize="{ minRows: 4 }">
+          <el-input type="textarea" placeholder="请输入内容" v-model="apiForm.successReturn" :autosize="{ minRows: 4 }">
           </el-input>
         </el-tab-pane>
         <el-tab-pane label="失败结果">
-          <el-input type="textarea" placeholder="请输入内容" v-model="apiToEdit.errorReturn" :autosize="{ minRows: 4 }">
+          <el-input type="textarea" placeholder="请输入内容" v-model="apiForm.errorReturn" :autosize="{ minRows: 4 }">
           </el-input>
         </el-tab-pane>
       </el-tabs>
@@ -160,7 +160,7 @@
 
     <div class="row">
       <p class="title">备注：</p>
-      <el-input type="textarea" placeholder="请输入内容" v-model="apiToEdit.dec" :autosize="{ minRows: 4 }" style="margin: 15px 5px 5px 5px;">
+      <el-input type="textarea" placeholder="请输入内容" v-model="apiForm.dec" :autosize="{ minRows: 4 }" style="margin: 15px 5px 5px 5px;">
       </el-input>
     </div>
 
@@ -187,6 +187,18 @@
     },
     data() {
       return {
+        apiForm: {
+          groupId: '',
+          status: '',
+          protocol: '',
+          type: '',
+          apiHeader: [],
+          apiParams: [],
+          apiReturn: [],
+          successReturn: '',
+          errorReturn: '',
+          dec: ''
+        },
         apiType: API_TYPE,
         apiHeader: API_HEADER_PARAMS,
         apiParamsType: API_PARAMS_TYPE,
@@ -217,16 +229,13 @@
       },
       userInfor() {
         return this.$store.state.userInfor
-      },
-      apiToEdit() {
-        return this.$store.state.apiToEdit
       }
     },
     methods: {
       addApi() {
-        this.apiToEdit.projectId = this.project.id
-        this.apiToEdit.userId = this.userInfor.userId
-        this.ApiService.addApi(this.apiToEdit).then(ret => {
+        this.apiForm.projectId = this.project.id
+        this.apiForm.userId = this.userInfor.userId
+        this.ApiService.addApi(this.apiForm).then(ret => {
           if(ret.status === 200) {
             this.$message({
               type: 'success',
@@ -260,10 +269,10 @@
         this.$emit('backToApiList', 'apiList')
       },
       removeApiRet(index) {
-        this.apiToEdit.apiReturn.splice(index, 1)
+        this.apiForm.apiReturn.splice(index, 1)
       },
       addApiRet() {
-        this.apiToEdit.apiReturn.push({
+        this.apiForm.apiReturn.push({
           must: '1',
           value: []
         })
@@ -278,10 +287,10 @@
         })
       },
       removeApiParams(index) {
-        this.apiToEdit.apiParams.splice(index, 1)
+        this.apiForm.apiParams.splice(index, 1)
       },
       addApiParams() {
-        this.apiToEdit.apiParams.push({
+        this.apiForm.apiParams.push({
           must: '1',
           type: '',
           detail: false,
@@ -307,14 +316,14 @@
         })
       },
       addApiHeader() {
-        this.apiToEdit.apiHeader.push({
+        this.apiForm.apiHeader.push({
           name: '',
           content: '',
           must: '1'
         })
       },
       removeApiHeader(index) {
-        this.apiToEdit.apiHeader.splice(index, 1)
+        this.apiForm.apiHeader.splice(index, 1)
       }
     }
   }

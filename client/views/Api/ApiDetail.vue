@@ -3,7 +3,7 @@
     <div class="header-btn">
       <el-button icon="arrow-left" @click="backToApiList">接口列表</el-button>
       <el-button type="primary" icon="information">详情</el-button>
-      <el-button icon="edit">编辑</el-button>
+      <el-button icon="edit" @click="backToApiEdit">编辑</el-button>
       <el-button icon="delete2" @click="deleteApiDialog = true">删除</el-button>
     </div>
 
@@ -195,9 +195,30 @@
       },
       group() {
         return this.$store.state.group
+      },
+      apiToEdit() {
+        return this.$store.state.apiToEdit
       }
     },
     methods: {
+      backToApiEdit() {
+        this.$emit('backToApiList', 'apiEdit')
+        let apiToEdit = {
+          groupId: this.api.group_id,
+          status: this.api.status,
+          protocol: this.api.protocol,
+          type: this.api.type,
+          apiHeader: this.api.header,
+          apiParams: this.api.params,
+          apiReturn: this.api.return,
+          successReturn: this.api.success_return,
+          errorReturn: this.api.error_return,
+          dec: this.api.dec,
+          name: this.api.name,
+          url: this.api.url
+        }
+        this.$store.commit('SAVE_API_TO_EDIT', apiToEdit)
+      },
       handleApiParamExample(param) {
         this.apiParamExampleDialog = true
         this.paramExample = {
@@ -229,7 +250,7 @@
               message: `删除成功！`
             })
             this.searchApiList(this.group)
-            this.$emit('backToApiList', false)
+            this.$emit('backToApiList', 'apiList')
           }
         })
       },
@@ -252,7 +273,7 @@
             this.$store.commit('SAVE_API_LIST', res.data)
           })
         }
-      },
+      }
     }
   }
 

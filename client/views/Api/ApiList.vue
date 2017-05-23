@@ -143,24 +143,26 @@
     },
     methods: {
       addApi() {
-        this.$emit('changeApi', 'apiEdit')
+        this.$emit('changeApi', 'apiAdd')
       },
       handleCurrentChange(val) {
-        this.ApiService.getApiDetail({
-          apiId: val.id
-        }).then(res => {
-          if (res.status === 200) {
-            res.data.update_time = Moment(res.data.update_time).format('YYYY-MM-DD HH:mm:ss')
-            res.data.params.forEach(param => {
-              param.value = JSON.parse(param.value)
-            })
-            res.data.return.forEach(ret => {
-              ret.value = JSON.parse(ret.value)
-            })
-            this.$store.commit('SAVE_API', res.data)
-            this.$emit('changeApi', 'apiDetail')
-          }
-        })
+        if (!this.deleteApiDialog) {
+          this.ApiService.getApiDetail({
+            apiId: val.id
+          }).then(res => {
+            if (res.status === 200) {
+              res.data.update_time = Moment(res.data.update_time).format('YYYY-MM-DD HH:mm:ss')
+              res.data.params.forEach(param => {
+                param.value = JSON.parse(param.value)
+              })
+              res.data.return.forEach(ret => {
+                ret.value = JSON.parse(ret.value)
+              })
+              this.$store.commit('SAVE_API', res.data)
+              this.$emit('changeApi', 'apiDetail')
+            }
+          })
+        }
       },
       handleDelApi(api) {
         this.deleteApiDialog = true

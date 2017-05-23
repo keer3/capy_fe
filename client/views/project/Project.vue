@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-tabs v-model="activeName" class="second-nav" >
+    <el-tabs v-model="activeName" class="second-nav">
 
       <el-tab-pane name="first">
         <span slot="label"><i class="el-icon-date"></i> 项目概况</span>
@@ -9,9 +9,10 @@
 
       <el-tab-pane name="second">
         <span slot="label"><i class="el-icon-document"></i> 接口文档</span>
-        <apiList v-on:changeApi="handleCurrentChangeApi" v-show="changeApi === 'apiList'"/>
+        <apiList v-on:changeApi="handleCurrentChangeApi" v-show="changeApi === 'apiList'" />
         <apiDetail v-on:backToApiList="handleCurrentChangeApi" v-show="changeApi === 'apiDetail'" />
-        <apiEdit v-on:backToApiList="handleCurrentChangeApi" v-show="changeApi === 'apiEdit'" />
+        <apiAdd v-on:backToApiList="handleCurrentChangeApi" v-show="changeApi === 'apiAdd'" />
+        <apiEdit v-on:backToApiList="handleCurrentChangeApi"  v-show="changeApi === 'apiEdit'" />
       </el-tab-pane>
 
       <el-tab-pane name="third">
@@ -56,10 +57,12 @@
 <script>
   import ApiList from '../Api/ApiList.vue'
   import ApiDetail from '../Api/ApiDetail.vue'
+  import ApiAdd from '../Api/ApiAdd.vue'
   import ApiEdit from '../Api/ApiEdit.vue'
   import ProjectMember from './ProjectMember.vue'
   import ProjectService from '../../service/project.service'
   import ProjectDetail from './ProjectDetail.vue'
+  import Moment from 'moment'
   import {
     PROJECT_TYPE
   } from '../../../config/global.config.js'
@@ -70,6 +73,7 @@
       ProjectMember,
       ProjectDetail,
       ApiDetail,
+      ApiAdd,
       ApiEdit
     },
     mounted() {
@@ -114,6 +118,7 @@
     methods: {
       handleCurrentChangeApi(val) {
         this.changeApi = val
+        this.reload()
       },
       changeTap(tapName) {
         this.activeName = tapName
@@ -132,7 +137,7 @@
             this.ProjectService.updateProjectInfo(this.projectModel).then(res => {
               if (res.status === 200) {
                 this.editProjectDialogVisible = false
-                
+
                 this.project.name = this.projectModel.name
                 this.project.type = this.projectModel.type
                 this.project.version = this.projectModel.version
@@ -151,6 +156,16 @@
             })
           } else {
             return false
+          }
+        })
+      },
+      reload() {
+        this.ProjectService.getProjectInfo({
+          projectId: this.project.id
+        }).then(res => {
+          if (res.status === 200) {
+            res.data.update_time = Moment(res.data.update_time).format('YYYY-MM-DD HH:mm:ss')
+            this.$store.commit('SAVE_PROJECT', res.data)
           }
         })
       }
