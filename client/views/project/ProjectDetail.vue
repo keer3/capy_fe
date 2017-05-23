@@ -66,6 +66,30 @@
         </div>
       </el-col>
     </el-row>
+
+    <el-dialog title="编辑项目" :visible.sync="editProjectDialogVisible" class="add-dialog">
+      <el-form :model="projectModel" :rules="rules" ref="projectModel" label-position="left" label-width="80px">
+        <el-form-item label="项目名称" prop="name">
+          <el-input v-model="projectModel.name"></el-input>
+        </el-form-item>
+        <el-form-item label="版本号" prop="version">
+          <el-input v-model="projectModel.version"></el-input>
+        </el-form-item>
+        <el-form-item label="项目类型" prop="type">
+          <el-select v-model="projectModel.type" placeholder="请选择项目类型">
+            <el-option v-for="type of projectType" :label="type.name" :value="type.name"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="项目说明" prop="dsc">
+          <el-input type="textarea" v-model="projectModel.dec"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editProjectDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editProject">保 存</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -120,11 +144,35 @@
       }
     },
     methods: {
+      editProject() {
+        this.$refs.projectModel.validate((valid) => {
+          if (valid) {
+            this.projectModel.projectId = this.project.id
+            this.ProjectService.updateProjectInfo(this.projectModel).then(res => {
+              if (res.status === 200) {
+                this.editProjectDialogVisible = false
+                this.projectModel = {
+                  type: ''
+                }
+                this.project.name = res.data.name
+                this.project.type = res.data.type
+                this.project.version = res.data.version
+                this.project.dec = res.data.dec
+                this.$message({
+                  type: 'success',
+                  message: `保存成功！`
+                })
+              }
+            })
+          } else {
+            return false
+          }
+        })
+      },
       changeTap(tapName) {
-        this.$emit('changeTap',tapName)
+        this.$emit('changeTap', tapName)
       },
       handleEdit(project) {
-        console.log('4444');
         this.editProjectDialogVisible = true
         this.projectModel.name = project.name
         this.projectModel.type = project.type
@@ -138,7 +186,7 @@
             this.ProjectService.updateProjectInfo(this.projectModel).then(res => {
               if (res.status === 200) {
                 this.editProjectDialogVisible = false
-                
+
                 this.project.name = this.projectModel.name
                 this.project.type = this.projectModel.type
                 this.project.version = this.projectModel.version
@@ -146,8 +194,6 @@
                 this.projectModel = {
                   type: ''
                 }
-
-                console.log(this.project)
 
                 this.$message({
                   type: 'success',
@@ -229,4 +275,5 @@
       }
     }
   }
+
 </style>
