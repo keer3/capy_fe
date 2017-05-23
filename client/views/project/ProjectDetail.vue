@@ -124,6 +124,7 @@
         this.$emit('changeTap',tapName)
       },
       handleEdit(project) {
+        console.log('4444');
         this.editProjectDialogVisible = true
         this.projectModel.name = project.name
         this.projectModel.type = project.type

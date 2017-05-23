@@ -36,4 +36,9 @@ export default class ProjectService extends HTTP {
   addApi (params = {}) {
     return this.post('api/addApi', params)
   }
+
+  updateApi (params = {}) {
+    return this.post('api/updateApi', params)
+  }
+
 }

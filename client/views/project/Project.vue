@@ -12,7 +12,7 @@
         <apiList v-on:changeApi="handleCurrentChangeApi" v-show="changeApi === 'apiList'" />
         <apiDetail v-on:backToApiList="handleCurrentChangeApi" v-show="changeApi === 'apiDetail'" />
         <apiAdd v-on:backToApiList="handleCurrentChangeApi" v-show="changeApi === 'apiAdd'" />
-        <apiEdit v-on:backToApiList="handleCurrentChangeApi"  v-show="changeApi === 'apiEdit'" />
+        <apiEdit v-on:backToApiList="handleCurrentChangeApi" v-show="changeApi === 'apiEdit'" />
       </el-tab-pane>
 
       <el-tab-pane name="third">
@@ -61,6 +61,7 @@
   import ApiEdit from '../Api/ApiEdit.vue'
   import ProjectMember from './ProjectMember.vue'
   import ProjectService from '../../service/project.service'
+  import ApiService from '../../service/api.service'
   import ProjectDetail from './ProjectDetail.vue'
   import Moment from 'moment'
   import {
@@ -78,6 +79,7 @@
     },
     mounted() {
       this.ProjectService = new ProjectService()
+      this.ApiService = new ApiService()
     },
     computed: {
       userInfor() {
@@ -85,6 +87,12 @@
       },
       project() {
         return this.$store.state.project
+      },
+      apiList() {
+        return this.$store.state.apiList
+      },
+      group() {
+        return this.$store.state.group
       }
     },
     data() {
@@ -118,7 +126,8 @@
     methods: {
       handleCurrentChangeApi(val) {
         this.changeApi = val
-        this.reload()
+        this.reloadProjectInfor()
+        this.reloadApiList()
       },
       changeTap(tapName) {
         this.activeName = tapName
@@ -137,7 +146,6 @@
             this.ProjectService.updateProjectInfo(this.projectModel).then(res => {
               if (res.status === 200) {
                 this.editProjectDialogVisible = false
-
                 this.project.name = this.projectModel.name
                 this.project.type = this.projectModel.type
                 this.project.version = this.projectModel.version
@@ -145,9 +153,6 @@
                 this.projectModel = {
                   type: ''
                 }
-
-                console.log(this.project)
-
                 this.$message({
                   type: 'success',
                   message: `保存成功！`
@@ -159,7 +164,7 @@
           }
         })
       },
-      reload() {
+      reloadProjectInfor() {
         this.ProjectService.getProjectInfo({
           projectId: this.project.id
         }).then(res => {
@@ -168,6 +173,23 @@
             this.$store.commit('SAVE_PROJECT', res.data)
           }
         })
+      },
+      reloadApiList() {
+        if (this.group === 'all') {
+          this.ApiService.getAllApi({
+            projectId: this.project.id
+          }).then(res => {
+            if (res.status === 200) {
+              this.$store.commit('SAVE_API_LIST', res.data)
+            }
+          })
+        } else {
+          this.ApiService.getApiByGroup({
+            groupId: this.group
+          }).then(res => {
+            this.$store.commit('SAVE_API_LIST', res.data)
+          })
+        }
       }
     }
   }

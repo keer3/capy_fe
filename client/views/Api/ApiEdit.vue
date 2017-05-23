@@ -2,7 +2,7 @@
   <div class="api-form">
     <div class="form-header-btn">
       <el-button icon="arrow-left" @click="backToApiList">接口列表</el-button>
-      <el-button icon="check" type="primary" @click="addApi">保存</el-button>
+      <el-button icon="check" type="primary" @click="saveEdit">保存</el-button>
     </div>
 
     <div class="row">
@@ -193,12 +193,16 @@
         groupList: [],
         activeName: 'success',
         apiRules: {
-          url: [
-            {required: true, message: '请输入URL', trigger: 'blur'}
-          ],
-          name: [
-            {required: true, message: '请输入接口名称', trigger: 'blur'}
-          ]
+          url: [{
+            required: true,
+            message: '请输入URL',
+            trigger: 'blur'
+          }],
+          name: [{
+            required: true,
+            message: '请输入接口名称',
+            trigger: 'blur'
+          }]
         }
       }
     },
@@ -223,16 +227,17 @@
       }
     },
     methods: {
-      addApi() {
+      saveEdit() {
+        this.apiToEdit.apiId = this.api.id
         this.apiToEdit.projectId = this.project.id
         this.apiToEdit.userId = this.userInfor.userId
-        this.ApiService.addApi(this.apiToEdit).then(ret => {
-          if(ret.status === 200) {
+        this.ApiService.updateApi(this.apiToEdit).then(res => {
+          if (res.status === 200) {
             this.$message({
               type: 'success',
               message: `保存成功！`
             })
-            this.searchApiList(this.group)
+            this.$emit('backToApiList', 'apiList')
           }
         })
       },
@@ -369,10 +374,10 @@
           }
         }
       }
-      .main-input{
+      .main-input {
         margin-bottom: 15px;
         margin-top: 10px;
-        .el-form-item:first-child{
+        .el-form-item:first-child {
           margin-bottom: 20px;
         }
       }
@@ -404,7 +409,7 @@
     }
     .api-example {
       margin-top: 20px;
-      .el-tabs--border-card{
+      .el-tabs--border-card {
         border: 1px solid #e5e5e5;
         box-shadow: none;
       }

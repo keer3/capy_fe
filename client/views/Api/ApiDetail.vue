@@ -145,7 +145,7 @@
     <div class="api-remark">
       <p class="title">备注</p>
       <div class="content">
-        {{ api.remark }}
+        {{ api.dec }}
       </div>
     </div>
 
