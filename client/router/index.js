@@ -31,16 +31,16 @@ const loginRoute = {
   component: require('../views/user/login.vue')
 }
 
-// 登录路由
+// 注册路由
 const regRoute = {
   path: '/reg',
   component: require('../views/user/Reg.vue')
 }
 
-// 未找到页面路由
-const errorRoute = {
-  path: '/404',
-  component: require('../views/404.vue')
+// 忘记密码页面
+const forgetPsdRoute = {
+  path: '/forgetPsd',
+  component: require('../views/user/ForgetPsd.vue')
 }
 
 // 重定向路由
@@ -49,7 +49,7 @@ const redirectRoute = {
   redirect: '/login'
 }
 
-routers = routers.concat([indexRouter, loginRoute, regRoute, errorRoute, redirectRoute])
+routers = routers.concat([indexRouter, loginRoute, regRoute, forgetPsdRoute, redirectRoute])
 
 export default new Router({
   mode: 'history',

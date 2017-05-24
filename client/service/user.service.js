@@ -11,4 +11,8 @@ export default class UserService extends HTTP {
   reg (params = {}) {
     return this.post('user/reg', params)
   }
+
+  forgetPsd (params = {}) {
+    return this.post('user/forgetPsd', params)
+  }
 }

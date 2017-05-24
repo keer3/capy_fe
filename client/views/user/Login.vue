@@ -19,7 +19,7 @@
     <div class="login-footer">
       <span class="toReg" @click="toReg">还没有账号，免费注册..</span>
       <span><el-checkbox v-model="rememberPsdChecked">记住密码</el-checkbox></span>
-      <span>忘记密码</span>
+      <span @click="toForgetPsd">忘记密码</span>
     </div>
   </div>
 </template>
@@ -81,6 +81,11 @@
       toReg() {
         this.$router.push({
           path: '/reg'
+        })
+      },
+      toForgetPsd() {
+        this.$router.push({
+          path: '/forgetPsd'
         })
       },
       rememberPsd() {
