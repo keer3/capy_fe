@@ -18,7 +18,7 @@
     </el-form>
     <div class="login-footer">
       <span class="toReg" @click="toReg">还没有账号，免费注册..</span>
-      <span><el-checkbox v-model="rememberPsd">记住密码</el-checkbox></span>
+      <span><el-checkbox v-model="rememberPsdChecked">记住密码</el-checkbox></span>
       <span>忘记密码</span>
     </div>
   </div>
@@ -34,11 +34,21 @@
           phone: '',
           psd: ''
         },
-        rememberPsd: true,
+        rememberPsdChecked: false,
         loading: false
       }
     },
     mounted() {
+      //如果记住了密码 则显示用户名和密码
+      let oldPhone = this.$cookie.get('capy_phone')
+      if (oldPhone) {
+        this.rememberPsdChecked = true
+        this.userInfor.phone = oldPhone
+      }
+      let oldPwd = this.$cookie.get('capy_psd')
+      if (oldPwd) {
+        this.userInfor.psd = oldPwd
+      }
       this.UserService = new UserService()
     },
     methods: {
@@ -47,7 +57,7 @@
         this.loadding = true
         this.UserService.login({
           phone: this.userInfor.phone,
-          password: this.userInfor.psd
+          password: sha1(this.userInfor.psd)
         }).then(res => {
           this.loadding = false
           const {
@@ -62,6 +72,8 @@
             this.$router.push({
               path: '/project/list'
             })
+            // 处理记住密码
+            this.rememberPsd()
           }
         })
       },
@@ -70,6 +82,15 @@
         this.$router.push({
           path: '/reg'
         })
+      },
+      rememberPsd() {
+        if (this.rememberPsdChecked) {
+          this.$cookie.set('capy_phone', this.userInfor.phone, 1)
+          this.$cookie.set('capy_psd', this.userInfor.psd, 1)
+        } else {
+          this.$cookie.delete('capy_phone')
+          this.$cookie.delete('capy_psd')
+        }
       }
     }
   }
@@ -120,7 +141,7 @@
       &>span {
         margin-left: 50px;
       }
-      .toReg{
+      .toReg {
         position: absolute;
         left: 5px;
         margin: 0px;

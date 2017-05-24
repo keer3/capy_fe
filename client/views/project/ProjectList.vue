@@ -55,8 +55,8 @@
             <el-option v-for="type of projectType" :label="type.name" :value="type.name"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="项目说明" prop="dsc">
-          <el-input type="textarea" v-model="project.dsc"></el-input>
+        <el-form-item label="项目说明" prop="dec">
+          <el-input type="textarea" v-model="project.dec"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -91,7 +91,7 @@
         deleteProjectDialogVisible: false,
         project: {
           type: '',
-          version: '1.0.0'
+          version: 'V 1.0.0'
         },
         projectType: PROJECT_TYPE,
         rules: {
@@ -138,7 +138,10 @@
                 if (res.status === 200) {
                   this.reload()
                   this.addProjectDialogVisible = false
-                  this.project = {}
+                  this.project = {
+                    type: '',
+                    version: 'V 1.0.0'
+                  }
                   this.$message({
                     type: 'success',
                     message: `添加成功！`
