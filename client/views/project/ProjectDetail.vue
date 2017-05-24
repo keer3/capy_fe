@@ -178,33 +178,6 @@
         this.projectModel.type = project.type
         this.projectModel.version = project.version
         this.projectModel.dec = project.dec
-      },
-      saveEdit() {
-        this.$refs.projectModel.validate((valid) => {
-          if (valid) {
-            this.projectModel.projectId = this.project.id
-            this.ProjectService.updateProjectInfo(this.projectModel).then(res => {
-              if (res.status === 200) {
-                this.editProjectDialogVisible = false
-
-                this.project.name = this.projectModel.name
-                this.project.type = this.projectModel.type
-                this.project.version = this.projectModel.version
-                this.project.dec = this.projectModel.dec
-                this.projectModel = {
-                  type: ''
-                }
-
-                this.$message({
-                  type: 'success',
-                  message: `保存成功！`
-                })
-              }
-            })
-          } else {
-            return false
-          }
-        })
       }
     }
   }

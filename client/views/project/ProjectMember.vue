@@ -28,7 +28,7 @@
 
         <p class="kind" v-if="memberList.length > 1">协作成员</p>
 
-        <el-row :gutter="20">
+        <el-row :gutter="20" style="padding-bottom: 20px;">
 
           <el-col v-for="member of memberList" :span="12" :xs="12" :sm="8" :md="6" :lg="6" v-if="member.id !== project.create_userId">
             <ul class="member">

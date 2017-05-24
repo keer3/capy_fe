@@ -55,10 +55,10 @@
   </div>
 </template>
 <script>
-  import ApiList from '../Api/ApiList.vue'
-  import ApiDetail from '../Api/ApiDetail.vue'
-  import ApiAdd from '../Api/ApiAdd.vue'
-  import ApiEdit from '../Api/ApiEdit.vue'
+  import ApiList from '../api/ApiList.vue'
+  import ApiDetail from '../api/ApiDetail.vue'
+  import ApiAdd from '../api/ApiAdd.vue'
+  import ApiEdit from '../api/ApiEdit.vue'
   import ProjectMember from './ProjectMember.vue'
   import ProjectService from '../../service/project.service'
   import ApiService from '../../service/api.service'
