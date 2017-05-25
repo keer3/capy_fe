@@ -198,6 +198,9 @@
       },
       apiToEdit() {
         return this.$store.state.apiToEdit
+      },
+      apiCount() {
+        return this.$store.state.apiCount
       }
     },
     methods: {
@@ -251,6 +254,7 @@
             })
             this.searchApiList(this.group)
             this.$emit('backToApiList', 'apiList')
+            this.$store.commit('SAVE_API_COUNT', this.apiCount - 1)
           }
         })
       },

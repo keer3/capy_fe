@@ -8,8 +8,8 @@
         </div>
       </el-col>
       <el-col :span="15">
-        <div class="grid-content bg-purple">
-          <p>{{ project.dec ? project.dec : '暂无项目说明信息' }}</p>
+        <div class="grid-content bg-purple project-dec">
+          <div class="project-dec-div">{{ project.dec ? project.dec : '暂无项目说明信息' }}</div>
         </div>
       </el-col>
       <el-col :span="3">
@@ -185,6 +185,18 @@
 </script>
 <style lang="">
   .project-infor {
+    .project-dec {
+      display: table;
+      .project-dec-div {
+        display: table-cell;
+        vertical-align: middle;
+        margin: 0px;
+        padding-left: 15px;
+        padding-right: 15px;
+        line-height: 24px;
+        font-size: 14px;
+      }
+    }
     .title-row {
       border: 1px solid #e5e5e5;
       border-bottom: 0px;

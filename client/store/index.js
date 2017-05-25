@@ -10,7 +10,9 @@ const state = {
   api: {},
   apiList: [],
   group: {},
-  apiToEdit: {}
+  groupList: [],
+  apiToEdit: {},
+  apiCount: 0
 }
 
 const mutations = {
@@ -29,13 +31,21 @@ const mutations = {
   SAVE_GROUP (state, group) {
     state.group = group
   },
+  SAVE_GROUP_LIST (state, groupList) {
+    state.groupList = groupList
+  },
   SAVE_API_TO_EDIT (state, api) {
     state.apiToEdit = api
+  },
+  SAVE_API_COUNT (state, apiCount) {
+    state.apiCount = apiCount
   }
 }
 
 const actions = {
-  incrementAsync ({ commit }) {
+  incrementAsync ({
+    commit
+  }) {
     setTimeout(() => {
       commit('INCREMENT')
     }, 200)

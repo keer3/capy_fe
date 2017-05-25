@@ -183,7 +183,6 @@
   export default {
     mounted() {
       this.ApiService = new ApiService()
-      this.getGroupList()
     },
     data() {
       return {
@@ -202,7 +201,6 @@
         apiType: API_TYPE,
         apiHeader: API_HEADER_PARAMS,
         apiParamsType: API_PARAMS_TYPE,
-        groupList: [],
         activeName: 'success',
         apiRules: {
           url: [
@@ -229,6 +227,12 @@
       },
       userInfor() {
         return this.$store.state.userInfor
+      },
+      groupList() {
+        return this.$store.state.groupList
+      },
+      apiCount() {
+        return this.$store.state.apiCount
       }
     },
     methods: {
@@ -242,6 +246,7 @@
               message: `保存成功！`
             })
             this.searchApiList(this.group)
+            this.$store.commit('SAVE_API_COUNT', this.apiCount + 1)
           }
         })
       },
@@ -304,15 +309,6 @@
         param.value.push({
           value: '',
           dec: ''
-        })
-      },
-      getGroupList() {
-        this.ApiService.getGroupList({
-          projectId: this.project.id
-        }).then(res => {
-          if (res.status === 200) {
-            this.groupList = res.data
-          }
         })
       },
       addApiHeader() {

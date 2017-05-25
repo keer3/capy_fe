@@ -125,18 +125,22 @@
       },
       apiList() {
         return this.$store.state.apiList
+      },
+      groupList() {
+        return this.$store.state.groupList
+      },
+      apiCount() {
+        return this.$store.state.apiCount
       }
     },
     data() {
       return {
         searchApiInput: '',
-        groupList: [],
         addGroupDialog: false,
         addDialogTitle: '添加分组',
         group: {},
         deleteGroupDialog: false,
         groupSelect: 'all',
-        apiCount: 0,
         deleteApiDialog: false,
         api: {}
       }
@@ -180,6 +184,7 @@
               type: 'success',
               message: `删除成功！`
             })
+            this.$store.commit('SAVE_API_COUNT', this.apiCount - 1)
           }
         })
       },
@@ -192,7 +197,7 @@
           }).then(res => {
             if (res.status === 200) {
               this.$store.commit('SAVE_API_LIST', res.data)
-              this.apiCount = this.apiList.length
+              this.$store.commit('SAVE_API_COUNT', this.apiList.length)
             }
           })
         } else {
@@ -211,7 +216,7 @@
           projectId: this.project.id
         }).then(res => {
           if (res.status === 200) {
-            this.groupList = res.data
+            this.$store.commit('SAVE_GROUP_LIST', res.data)
           }
         })
       },
@@ -259,7 +264,9 @@
       handleAddGroup() {
         this.addGroupDialog = true
         this.addDialogTitle = '添加分组'
-        this.group = {}
+        this.group = {
+          name: ''
+        }
       },
       delApiGroup() {
         this.ApiService.delGroup({
@@ -272,6 +279,7 @@
             type: 'success',
             message: `删除成功！`
           })
+          this.searchApiList('all')
         })
       }
     }

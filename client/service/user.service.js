@@ -15,4 +15,8 @@ export default class UserService extends HTTP {
   forgetPsd (params = {}) {
     return this.post('user/forgetPsd', params)
   }
+
+  logout ({ phone }) {
+    return this.get(`user/logout?phone=${phone}`)
+  }
 }
